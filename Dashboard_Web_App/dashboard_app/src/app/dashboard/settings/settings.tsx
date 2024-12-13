@@ -1,12 +1,8 @@
 import React from "react";
 
-export default function dashboard() 
+export default function settings() 
 {
   return (
-    <div>
-      <main>
         <h1>Settings</h1>
-      </main>
-    </div>
   );
 }

@@ -1,8 +1,8 @@
 import React from "react";
-import Dashboard from "./dashboard";
+import Profile from "./profile";
 export default function dashboard() 
 {
   return (
-        <Dashboard />
+        <Profile />
   );
 }
