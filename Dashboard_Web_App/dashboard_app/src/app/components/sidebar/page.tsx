@@ -1,6 +1,6 @@
 import React from "react";
 import Sidebar from "./sidebar";
-export default function dashboard() 
+export default function sidebarPage() 
 {
   return (
         <Sidebar />

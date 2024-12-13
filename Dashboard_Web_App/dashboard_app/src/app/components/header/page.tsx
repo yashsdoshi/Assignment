@@ -1,6 +1,6 @@
 import React from "react";
 import Header from "./header";
-export default function dashboard() 
+export default function headerPage() 
 {
   return (
         <Header />
