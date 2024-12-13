@@ -1,6 +1,6 @@
 import styles from "./page.module.css";
 import Header from "./components/header/page";
-import Sidebar from "./components/sidebar/sidebar";
+import Sidebar from "./components/sidebar/page";
 import Dashboard from "./dashboard/page";
 export default function Home() {
   return (
