@@ -8,7 +8,7 @@ import ListItemText from '@mui/material/ListItemText';
 import Checkbox from '@mui/material/Checkbox';
 
 export default function CheckboxList() {
-    const [checked, setChecked] = React.useState([0]);
+    const [checked, setChecked] = React.useState<number[]>([]);
 
     const handleToggle = (value: number) => () => {
         const currentIndex = checked.indexOf(value);
@@ -23,29 +23,26 @@ export default function CheckboxList() {
         setChecked(newChecked);
     };
 
-    const labels = ['Go to gym', 'Buy groceries', 'Do laundry', 'Cook dinner'];
+    const labels = ['Go to gym', 'Buy groceries', 'Do laundry', 'Cook dinner', 'Clean house'];
 
     return (
         <List sx={{ width: '100%', bgcolor: 'background.paper', marginLeft: '40%', maxWidth: 360 }}>
-            {[0, 1, 2, 3].map((value) => {
-                const labelId = `checkbox-list-label-${value}`;
+            {labels.map((label, index) => {
+                const labelId = `checkbox-list-label-${index}`;
 
                 return (
-                    <ListItem
-                        key={value}
-                        disablePadding
-                    >
-                        <ListItemButton role={undefined} onClick={handleToggle(value)} dense>
+                    <ListItem key={index} disablePadding>
+                        <ListItemButton role={undefined} onClick={handleToggle(index)} dense>
                             <ListItemIcon>
                                 <Checkbox
                                     edge="start"
-                                    checked={checked.includes(value)}
+                                    checked={checked.includes(index)}
                                     tabIndex={-1}
                                     disableRipple
                                     inputProps={{ 'aria-labelledby': labelId }}
                                 />
                             </ListItemIcon>
-                            <ListItemText id={labelId} primary={labels[value]} />
+                            <ListItemText id={labelId} primary={label} />
                         </ListItemButton>
                     </ListItem>
                 );
