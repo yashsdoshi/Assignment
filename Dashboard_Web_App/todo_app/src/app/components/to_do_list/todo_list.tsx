@@ -26,7 +26,7 @@ export default function CheckboxList() {
     const labels = ['Go to gym', 'Buy groceries', 'Do laundry', 'Cook dinner'];
 
     return (
-        <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper', alignItems: 'center'}}>
+        <List sx={{ width: '100%', bgcolor: 'background.paper', marginLeft: '40%', maxWidth: 360 }}>
             {[0, 1, 2, 3].map((value) => {
                 const labelId = `checkbox-list-label-${value}`;
 
