@@ -5,6 +5,7 @@ import Button from '@mui/material/Button';
 import Modal from '@mui/material/Modal';
 import AddIcon from '@mui/icons-material/Add';
 import TextField from '@mui/material/TextField';
+import IconButton from '@mui/material/IconButton';
 
 const style = {
     position: 'absolute',
@@ -18,7 +19,7 @@ const style = {
     p: 4,
 };
 
-export default function BasicModal() {
+export default function Modal() {
     const [open, setOpen] = React.useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
@@ -40,19 +41,16 @@ export default function BasicModal() {
                 aria-describedby="modal-modal-description"
             >
                 <Box sx={style}>
-                    <Box display="flex" alignItems="center" gap={2}>
+                    <Box display="flex" alignItems="center">
+                        <IconButton variant="contained">
+                                <addIcon />
+                        </IconButton >
                         <TextField
                             id="fullWidth"
                             label="Type a task"
                             variant="outlined"
                             fullWidth
                         />
-                        <Button
-                            variant="contained"
-                            sx={{ fontSize: 16, fontWeight: 700, color: 'black' }}
-                        >
-                            Add task
-                        </Button>
                     </Box>
                 </Box>
             </Modal>
