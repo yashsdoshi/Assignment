@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-//import "./globals.css";
-//import Providers from "./nextauth_providers";
 import { CssBaseline } from '@mui/material';
+//import { ThemeProvider, createTheme } from '@mui/material/styles'; 
+import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -16,22 +16,18 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "To Do App",
-  description: "create todo lists",
+  description: "Create todo lists",
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode; }>) {
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        {/* <Providers>
+        <AppRouterCacheProvider>
           {children}
-        </Providers> */}
-        <CssBaseline />
-        {children}
+        </AppRouterCacheProvider>
       </body>
     </html>
   );
