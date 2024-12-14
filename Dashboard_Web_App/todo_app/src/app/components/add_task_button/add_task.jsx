@@ -19,7 +19,7 @@ const style = {
     p: 4,
 };
 
-export default function Modal() {
+export default function BasicModal() {
     const [open, setOpen] = React.useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
@@ -42,15 +42,30 @@ export default function Modal() {
             >
                 <Box sx={style}>
                     <Box display="flex" alignItems="center">
-                        <IconButton variant="contained">
-                                <addIcon />
-                        </IconButton >
                         <TextField
                             id="fullWidth"
                             label="Type a task"
                             variant="outlined"
                             fullWidth
                         />
+                        <IconButton
+                            sx={{
+                                bgcolor: 'blue', 
+                                color: 'white', 
+                                padding: 1,     
+                                display: 'flex',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                borderRadius: '50%',
+                                '&:hover': {
+                                    bgcolor: 'lightblue', 
+                                },
+                                marginLeft: 1
+                            }}
+                            onClick={handleOpen}
+                        >
+                            <AddIcon />
+                        </IconButton>
                     </Box>
                 </Box>
             </Modal>
