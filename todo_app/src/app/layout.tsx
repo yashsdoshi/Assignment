@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { ThemeProvider } from '@mui/material/styles'; 
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
 import theme from './theme/theme';
+import StoreProvider from "./redux/StoreProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -23,6 +24,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode; }>) {
   return (
+    <StoreProvider>
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <ThemeProvider theme={theme}>
@@ -32,5 +34,6 @@ export default function RootLayout({
         </ThemeProvider>
       </body>
     </html>
+    </StoreProvider>
   );
 }
