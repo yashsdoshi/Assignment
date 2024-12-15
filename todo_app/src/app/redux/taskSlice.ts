@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface Task {
     id: string;
@@ -12,13 +12,19 @@ const taskSlice = createSlice({
         tasks: [] as Task[],
     },
     reducers: {
-        addTask(state, action: { payload: Task }) {
-            state.tasks.push(action.payload);
+        addTask(state, action: PayloadAction<string>) {
+            const newTask: Task = {
+                id: new Date().toISOString(),
+                title: action.payload,
+                completed: false,
+            };
+            state.tasks.push(newTask);
         },
-        removeTask(state, action: { payload: string }) {
+        removeTask(state, action: PayloadAction<string>) {
             state.tasks = state.tasks.filter((task) => task.id !== action.payload);
         },
     }
 });
 
+export const { addTask, removeTask } = taskSlice.actions;
 export default taskSlice.reducer;

@@ -1,4 +1,3 @@
-"use client";
 import * as React from 'react';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
@@ -6,43 +5,34 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Checkbox from '@mui/material/Checkbox';
+import { useAppSelector, useAppDispatch } from '@/app/redux/hooks';
+import { removeTask } from '@/app/redux/taskSlice';
 
 export default function CheckboxList() {
-    const [checked, setChecked] = React.useState<number[]>([]);
+    const tasks = useAppSelector((state) => state.task.tasks);
+    const dispatch = useAppDispatch();
 
-    const handleToggle = (value: number) => () => {
-        const currentIndex = checked.indexOf(value);
-        const newChecked = [...checked];
-
-        if (currentIndex === -1) {
-            newChecked.push(value);
-        } else {
-            newChecked.splice(currentIndex, 1);
-        }
-
-        setChecked(newChecked);
+    const handleToggle = (id: string) => () => {
+        dispatch(removeTask(id));
     };
-
-    const labels = ['Go to gym', 'Buy groceries', 'Do laundry', 'Cook dinner', 'Clean house'];
 
     return (
         <List sx={{ width: '100%', bgcolor: 'background.paper', marginLeft: '40%', maxWidth: 360 }}>
-            {labels.map((label, index) => {
-                const labelId = `checkbox-list-label-${index}`;
+            {tasks.map((task) => {
+                const labelId = `checkbox-list-label-${task.id}`;
 
                 return (
-                    <ListItem key={index} disablePadding>
-                        <ListItemButton role={undefined} onClick={handleToggle(index)} dense>
+                    <ListItem key={task.id} disablePadding>
+                        <ListItemButton role={undefined} onClick={handleToggle(task.id)} dense>
                             <ListItemIcon>
                                 <Checkbox
                                     edge="start"
-                                    checked={checked.includes(index)}
                                     tabIndex={-1}
                                     disableRipple
                                     inputProps={{ 'aria-labelledby': labelId }}
                                 />
                             </ListItemIcon>
-                            <ListItemText id={labelId} primary={label} />
+                            <ListItemText id={labelId} primary={task.title} />
                         </ListItemButton>
                     </ListItem>
                 );

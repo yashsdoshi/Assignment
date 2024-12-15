@@ -6,6 +6,8 @@ import Modal from '@mui/material/Modal';
 import AddIcon from '@mui/icons-material/Add';
 import TextField from '@mui/material/TextField';
 import IconButton from '@mui/material/IconButton';
+import { useAppDispatch } from '@/app/redux/hooks';
+import { addTask } from '@/app/redux/taskSlice';
 
 const style = {
     position: 'absolute',
@@ -21,8 +23,19 @@ const style = {
 
 export default function BasicModal() {
     const [open, setOpen] = React.useState(false);
+    const [taskTitle, setTaskTitle] = React.useState('');
+    const dispatch = useAppDispatch();
+
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
+
+    const handleAddTask = () => {
+        if (taskTitle.trim()) {
+            dispatch(addTask(taskTitle));
+            setTaskTitle('');
+            handleClose();
+        }
+    };
 
     return (
         <Box display="flex" justifyContent="center" alignItems="center" mt={2}>
@@ -47,6 +60,8 @@ export default function BasicModal() {
                             label="Type a task"
                             variant="outlined"
                             fullWidth
+                            value={taskTitle}
+                            onChange={(e) => setTaskTitle(e.target.value)}
                         />
                         <IconButton
                             sx={{
@@ -62,7 +77,7 @@ export default function BasicModal() {
                                 },
                                 marginLeft: 1
                             }}
-                            onClick={handleOpen}
+                            onClick={handleAddTask}
                         >
                             <AddIcon />
                         </IconButton>
