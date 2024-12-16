@@ -22,7 +22,7 @@ const taskSlice = createSlice({
         },
         removeTask(state, action: PayloadAction<string>) {
             state.tasks = state.tasks.filter((task) => task.id !== action.payload);
-        },
+        }
     }
 });
 

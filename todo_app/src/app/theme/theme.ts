@@ -11,8 +11,7 @@ const theme = createTheme({
         body: {
           display: 'flex',
           justifyContent: 'center',
-          alignItems: 'center',
-          backgroundColor: '#000'
+          alignItems: 'center'
         },
       },
     },

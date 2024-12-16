@@ -6,7 +6,7 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Checkbox from '@mui/material/Checkbox';
 import { useAppSelector, useAppDispatch } from '@/app/redux/hooks';
-import { removeTask } from '@/app/redux/taskSlice';
+import { removeTask } from '@/app/redux/task_slice';
 
 export default function CheckboxList() {
     const tasks = useAppSelector((state) => state.task.tasks);

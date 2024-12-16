@@ -7,7 +7,7 @@ import AddIcon from '@mui/icons-material/Add';
 import TextField from '@mui/material/TextField';
 import IconButton from '@mui/material/IconButton';
 import { useAppDispatch } from '@/app/redux/hooks';
-import { addTask } from '@/app/redux/taskSlice';
+import { addTask } from '@/app/redux/task_slice';
 
 const style = {
     position: 'absolute',
