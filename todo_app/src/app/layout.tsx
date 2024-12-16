@@ -17,7 +17,7 @@ export default function RootLayout({
         <head>
           <link rel="icon" type="image/x-icon" href="/logo.png" />
         </head>
-        <body style={{ margin: 0, backgroundColor: '#404040' }}>
+        <body style={{ margin: 0, background: 'linear-gradient(45deg, rgba(2,0,36,1) 0%, rgba(60,60,60,1) 64%, rgba(255,255,255,1) 100%)', minHeight: '100vh', maxHeight: '100%' }}>
           <ThemeProvider theme={theme}>
             {children}
           </ThemeProvider>

@@ -14,7 +14,7 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
 
-export default function header() {
+export default function Header() {
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
 
@@ -32,7 +32,7 @@ export default function header() {
     <AppBar position="static" sx={{ backgroundColor: '#1a1a1a', color: 'white' }}>
       <Container maxWidth={false} sx={{ margin: '0 auto', padding: '0 16px' }} disableGutters>
         <Toolbar disableGutters>
-        <img src='/logo.png' width={40} alt="Girl in a jacket" style={{ marginRight: 10 }} />
+          <img src='/logo.png' width={40} alt="Logo" style={{ marginRight: 10 }} />
           <Typography
             variant="h6"
             noWrap
@@ -43,7 +43,6 @@ export default function header() {
               display: { xs: 'none', md: 'flex' },
               fontFamily: 'monospace',
               fontWeight: 700,
-              letterSpacing: '.3rem',
               color: 'inherit',
               textDecoration: 'none',
             }}
@@ -76,17 +75,16 @@ export default function header() {
               flexGrow: 1,
               fontFamily: 'monospace',
               fontWeight: 700,
-              letterSpacing: '.3rem',
               color: 'inherit',
               textDecoration: 'none',
             }}
           >
-            LOGO
+            Logo
           </Typography>
 
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-            <Button onClick={() => window.location.href = '/about'} sx={{ my: 2, color: 'white', display: 'block' }}>
-              About
+            <Button onClick={() => window.location.href = '/stats'} sx={{ my: 2, color: 'white', display: 'block' }}>
+              Your Stats
             </Button>
           </Box>
 
@@ -105,7 +103,7 @@ export default function header() {
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
-              {['Settings'].map((item) => (
+              {['Log Out'].map((item) => (
                 <MenuItem key={item} onClick={handleCloseUserMenu}>
                   <Typography textAlign="center">{item}</Typography>
                 </MenuItem>

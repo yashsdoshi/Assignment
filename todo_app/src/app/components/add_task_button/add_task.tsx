@@ -14,11 +14,12 @@ const style = {
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    bgcolor: 'background.paper',
     border: '2px solid #000',
-    boxShadow: 30,
+    boxShadow: '1px 1px 10pxrgb(255, 255, 255)',
     borderRadius: 4,
     p: 4,
+    backgroundColor: 'black',
+    color: 'white',
 };
 
 export default function basicModal() {
@@ -41,23 +42,53 @@ export default function basicModal() {
         <Box display="flex" justifyContent="center" alignItems="center" mt={2} sx={{ color: 'white' }}>
             <Button
                 variant="outlined"
-                color="primary"
-                sx={{ fontSize: 16, fontWeight: 700, color: 'white', borderWidth: 3, borderRadius: 5, width: 500, letterSpacing: '.3rem' }}
+                sx={{
+                    fontSize: 16,
+                    fontWeight: 700,
+                    borderWidth: 3,
+                    borderRadius: 5,
+                    width: 500,
+                    letterSpacing: '.3rem',
+                    color: 'white',
+                    borderColor: 'white',
+                }}
                 onClick={handleOpen}
             >
-                Add new task <AddIcon sx={{ marginLeft: 1 }} />
+                Create new list <AddIcon sx={{ marginLeft: 1 }} />
             </Button>
 
             <Modal open={open} onClose={handleClose}>
                 <Box sx={style}>
-                    <Box display="flex" alignItems="center">
+                    <Box display="flex" flexDirection="column" alignItems="center" gap={2}>
                         <TextField
-                            id="fullWidth"
-                            label="Type a task"
+                            id="title"
+                            label="Add a title"
                             variant="outlined"
                             fullWidth
                             value={taskTitle}
                             onChange={(e) => setTaskTitle(e.target.value)}
+                            InputLabelProps={{ style: { color: 'white' } }}
+                            InputProps={{
+                                style: {
+                                    color: 'white',
+                                    borderColor: 'white',
+                                },
+                            }}
+                        />
+                        <TextField
+                            id="task"
+                            label="Add a task"
+                            variant="outlined"
+                            fullWidth
+                            value={taskTitle}
+                            onChange={(e) => setTaskTitle(e.target.value)}
+                            InputLabelProps={{ style: { color: 'white' } }}
+                            InputProps={{
+                                style: {
+                                    color: 'white',
+                                    borderColor: 'white',
+                                },
+                            }}
                         />
                         <IconButton
                             sx={{
@@ -69,9 +100,8 @@ export default function basicModal() {
                                 alignItems: 'center',
                                 borderRadius: '50%',
                                 '&:hover': {
-                                    bgcolor: '#2f5a9e'
+                                    bgcolor: '#2f5a9e',
                                 },
-                                marginLeft: 2
                             }}
                             onClick={handleAddTask}
                         >
