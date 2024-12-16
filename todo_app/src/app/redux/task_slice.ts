@@ -4,13 +4,21 @@ interface Task {
     id: string;
     title: string;
     completed: boolean;
-}
+};
+
+interface taskState {
+    tasks: Task[];
+    completedTasks: number;
+};
+
+const initialState: taskState = {
+    tasks: [],
+    completedTasks: 0,
+};
 
 const taskSlice = createSlice({
     name: 'task',
-    initialState: {
-        tasks: [] as Task[],
-    },
+    initialState,
     reducers: {
         addTask(state, action: PayloadAction<string>) {
             const newTask: Task = {
@@ -22,6 +30,7 @@ const taskSlice = createSlice({
         },
         removeTask(state, action: PayloadAction<string>) {
             state.tasks = state.tasks.filter((task) => task.id !== action.payload);
+            state.completedTasks += 1;
         }
     }
 });

@@ -1,22 +1,10 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import { ThemeProvider } from '@mui/material/styles'; 
-import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
+import { ThemeProvider } from '@mui/material/styles';
 import theme from './theme/theme';
 import StoreProvider from "./redux/store_provider";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
 export const metadata: Metadata = {
-  title: "To Do App",
+  title: "Todoist | Create todo lists in very efficient way",
   description: "Create todo lists",
 };
 
@@ -25,15 +13,16 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode; }>) {
   return (
     <StoreProvider>
-    <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <ThemeProvider theme={theme}>
-        <AppRouterCacheProvider>
-          {children}
-        </AppRouterCacheProvider>
-        </ThemeProvider>
-      </body>
-    </html>
+      <html lang="en">
+        <head>
+          <link rel="icon" type="image/x-icon" href="/logo.png" />
+        </head>
+        <body style={{ margin: 0, backgroundColor: '#404040' }}>
+          <ThemeProvider theme={theme}>
+            {children}
+          </ThemeProvider>
+        </body>
+      </html>
     </StoreProvider>
   );
 }

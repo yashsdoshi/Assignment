@@ -14,7 +14,7 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
 
-function Header() {
+export default function header() {
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
 
@@ -29,10 +29,10 @@ function Header() {
   const handleCloseUserMenu = () => setAnchorElUser(null);
 
   return (
-    <AppBar position="static">
-      <Container maxWidth="xl">
+    <AppBar position="static" sx={{ backgroundColor: '#1a1a1a', color: 'white' }}>
+      <Container maxWidth={false} sx={{ margin: '0 auto', padding: '0 16px' }} disableGutters>
         <Toolbar disableGutters>
-          <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
+        <img src='/logo.png' width={40} alt="Girl in a jacket" style={{ marginRight: 10 }} />
           <Typography
             variant="h6"
             noWrap
@@ -48,7 +48,7 @@ function Header() {
               textDecoration: 'none',
             }}
           >
-            To Do List
+            Todoist
           </Typography>
 
           <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
@@ -62,20 +62,6 @@ function Header() {
             >
               <MenuIcon />
             </IconButton>
-            <Menu
-              id="menu-appbar"
-              anchorEl={anchorElNav}
-              anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-              transformOrigin={{ vertical: 'top', horizontal: 'left' }}
-              open={Boolean(anchorElNav)}
-              onClose={handleCloseNavMenu}
-            >
-              {['Products', 'Pricing', 'Blog'].map((item) => (
-                <MenuItem key={item} onClick={handleCloseNavMenu}>
-                  <Typography textAlign="center">{item}</Typography>
-                </MenuItem>
-              ))}
-            </Menu>
           </Box>
 
           <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
@@ -99,11 +85,9 @@ function Header() {
           </Typography>
 
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-            {['About'].map((item) => (
-              <Button key={item} onClick={handleCloseNavMenu} sx={{ my: 2, color: 'white', display: 'block' }}>
-                {item}
-              </Button>
-            ))}
+            <Button onClick={() => window.location.href = '/about'} sx={{ my: 2, color: 'white', display: 'block' }}>
+              About
+            </Button>
           </Box>
 
           <Box sx={{ flexGrow: 0 }}>
@@ -133,5 +117,3 @@ function Header() {
     </AppBar>
   );
 }
-
-export default Header;

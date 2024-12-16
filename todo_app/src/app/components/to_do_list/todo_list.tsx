@@ -8,7 +8,7 @@ import Checkbox from '@mui/material/Checkbox';
 import { useAppSelector, useAppDispatch } from '@/app/redux/hooks';
 import { removeTask } from '@/app/redux/task_slice';
 
-export default function CheckboxList() {
+export default function checkboxList() {
     const tasks = useAppSelector((state) => state.task.tasks);
     const dispatch = useAppDispatch();
 
@@ -17,7 +17,7 @@ export default function CheckboxList() {
     };
 
     return (
-        <List sx={{ width: '100%', bgcolor: 'background.paper', marginLeft: '40%', maxWidth: 360 }}>
+        <List sx={{ width: '100%', marginLeft: '40%', maxWidth: 360 }}>
             {tasks.map((task) => {
                 const labelId = `checkbox-list-label-${task.id}`;
 

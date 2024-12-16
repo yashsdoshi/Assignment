@@ -21,7 +21,7 @@ const style = {
     p: 4,
 };
 
-export default function BasicModal() {
+export default function basicModal() {
     const [open, setOpen] = React.useState(false);
     const [taskTitle, setTaskTitle] = React.useState('');
     const dispatch = useAppDispatch();
@@ -38,21 +38,17 @@ export default function BasicModal() {
     };
 
     return (
-        <Box display="flex" justifyContent="center" alignItems="center" mt={2}>
+        <Box display="flex" justifyContent="center" alignItems="center" mt={2} sx={{ color: 'white' }}>
             <Button
-                variant="contained"
-                sx={{ fontSize: 16, fontWeight: 700 }}
+                variant="outlined"
+                color="primary"
+                sx={{ fontSize: 16, fontWeight: 700, color: 'white', borderWidth: 3, borderRadius: 5, width: 500, letterSpacing: '.3rem' }}
                 onClick={handleOpen}
             >
                 Add new task <AddIcon sx={{ marginLeft: 1 }} />
             </Button>
 
-            <Modal
-                open={open}
-                onClose={handleClose}
-                aria-labelledby="modal-modal-title"
-                aria-describedby="modal-modal-description"
-            >
+            <Modal open={open} onClose={handleClose}>
                 <Box sx={style}>
                     <Box display="flex" alignItems="center">
                         <TextField
@@ -65,17 +61,17 @@ export default function BasicModal() {
                         />
                         <IconButton
                             sx={{
-                                bgcolor: 'blue', 
-                                color: 'white', 
-                                padding: 1,     
+                                bgcolor: '#3874d0',
+                                color: 'white',
+                                padding: 1,
                                 display: 'flex',
                                 justifyContent: 'center',
                                 alignItems: 'center',
                                 borderRadius: '50%',
                                 '&:hover': {
-                                    bgcolor: 'lightblue', 
+                                    bgcolor: '#2f5a9e'
                                 },
-                                marginLeft: 1
+                                marginLeft: 2
                             }}
                             onClick={handleAddTask}
                         >
