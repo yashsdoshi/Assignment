@@ -15,10 +15,9 @@ export default function Home() {
       <div
         style={{
           display: "flex",
-          flexDirection: "row", // Keeps the items in a row
-          flexWrap: "wrap", // Allows items to wrap to the next row if necessary
-          justifyContent: "flex-start", // Aligns items to the left (optional)
-          padding: "10px",
+          flexDirection: "row", 
+          flexWrap: "wrap",
+          justifyContent: "flex-start",
         }}
       >
         <ToDoList />

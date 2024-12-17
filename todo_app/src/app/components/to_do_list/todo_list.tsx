@@ -33,13 +33,15 @@ const EditableListItem: React.FC<{
     handleTextChange: (index: number, newText: string) => void;
     handleEditStart: (index: number) => void;
     handleEditEnd: (index: number) => void;
+    handleDeleteItem: (index: number) => void;
 }> = ({
     item,
     index,
     handleToggle,
     handleTextChange,
     handleEditStart,
-    handleEditEnd
+    handleEditEnd,
+    handleDeleteItem
 }) => (
         <ListItem
             dense
@@ -103,14 +105,15 @@ const EditableListItem: React.FC<{
                 )}
             </ListItemIcon>
             <ListItemIcon>
-                <IconButton
-                    edge="end"
-                    aria-label="delete"
-                    size="small"
-                >
-                    <DeleteIcon />
-                </IconButton>
-            </ListItemIcon>
+        <IconButton
+                edge="end"
+                aria-label="delete"
+                size="small"
+                onClick={() => handleDeleteItem(index)}
+            >
+                <DeleteIcon />
+            </IconButton>
+        </ListItemIcon>
         </ListItem>
     );
 
@@ -199,6 +202,13 @@ export default function EditableList() {
             prev.map((item, i) => (i === index ? { ...item, isEditing: false } : item))
         );
 
+    const handleAddItem = () => {
+        setItems((prev) => [...prev, { text: "", checked: false, isEditing: true }]);
+    };
+
+    const handleDeleteItem = (index: number) =>
+        setItems((prev) => prev.filter((_, i) => i !== index));
+    
     return (
         <Paper
             elevation={3}
@@ -225,11 +235,12 @@ export default function EditableList() {
                         handleTextChange={handleTextChange}
                         handleEditStart={handleEditStart}
                         handleEditEnd={handleEditEnd}
+                        handleDeleteItem={handleDeleteItem}
                     />
                 ))}
             </List>
             <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
-                <IconButton aria-label="add">
+                <IconButton aria-label="add" onClick={handleAddItem}>
                     <AddIcon />
                 </IconButton>
             </Box>

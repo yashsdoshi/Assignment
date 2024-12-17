@@ -32,7 +32,7 @@ export default function Header() {
     <AppBar position="static" sx={{ backgroundColor: '#1a1a1a', color: 'white' }}>
       <Container maxWidth={false} sx={{ margin: '0 auto', padding: '0 16px' }} disableGutters>
         <Toolbar disableGutters>
-          <img src='/logo.png' width={40} alt="Logo" style={{ marginRight: 10 }} />
+          <img src='/logo.png' width={50} alt="Logo" style={{ marginRight: 10, cursor: 'grab' }} onClick={() => window.location.href = '/'} />
           <Typography
             variant="h6"
             noWrap
@@ -46,6 +46,7 @@ export default function Header() {
               color: 'inherit',
               textDecoration: 'none',
             }}
+            onClick={() => window.location.href = '/'}
           >
             Todoist
           </Typography>
@@ -84,7 +85,7 @@ export default function Header() {
 
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
             <Button onClick={() => window.location.href = '/stats'} sx={{ my: 2, color: 'white', display: 'block' }}>
-              Your Stats
+              Your Stats🚀
             </Button>
           </Box>
 

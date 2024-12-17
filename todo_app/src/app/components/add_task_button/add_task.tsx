@@ -9,6 +9,7 @@ import { addTask } from '@/app/redux/task_slice';
 import EditIcon from "@mui/icons-material/Edit";
 import CheckIcon from "@mui/icons-material/Check";
 import DeleteIcon from '@mui/icons-material/Delete';
+import { keyframes } from '@mui/system';
 import {
     Box,
     Checkbox,
@@ -35,86 +36,97 @@ const EditableListItem: React.FC<{
     handleTextChange: (index: number, newText: string) => void;
     handleEditStart: (index: number) => void;
     handleEditEnd: (index: number) => void;
+    handleDeleteItem: (index: number) => void;
 }> = ({
     item,
     index,
     handleToggle,
     handleTextChange,
     handleEditStart,
-    handleEditEnd
+    handleEditEnd,
+    handleDeleteItem
 }) => (
-    <ListItem
-        dense
-        divider
-        role="listitem"
-        aria-label={`List item ${index + 1}`}
-        sx={{
-            textDecoration: item.checked ? "line-through" : "none"
-        }}
-    >
-        <ListItemIcon>
-            <Checkbox
-                edge="start"
-                checked={item.checked}
-                onChange={() => handleToggle(index)}
-                inputProps={{ "aria-labelledby": `checkbox-list-label-${index}` }}
-            />
-        </ListItemIcon>
-        {item.isEditing ? (
-            <TextField
-                fullWidth
-                value={item.text}
-                onChange={(e) => handleTextChange(index, e.target.value)}
-                onBlur={() => handleEditEnd(index)}
-                onKeyDown={(e) => {
-                    if (e.key === "Enter") handleEditEnd(index);
-                }}
-                autoFocus
-                variant="standard"
-                aria-label="Edit text field"
-            />
-        ) : (
-            <ListItemText
-                id={`checkbox-list-label-${index}`}
-                primary={item.text}
-                sx={{ cursor: "pointer" }}
-                onDoubleClick={() => handleEditStart(index)}
-            />
-        )}
-        <ListItemIcon>
+        <ListItem
+            dense
+            divider
+            role="listitem"
+            aria-label={`List item ${index + 1}`}
+            sx={{
+                textDecoration: item.checked ? "line-through" : "none"
+            }}
+        >
+            <ListItemIcon>
+                <Checkbox
+                    edge="start"
+                    checked={item.checked}
+                    onChange={() => handleToggle(index)}
+                    inputProps={{ "aria-labelledby": `checkbox-list-label-${index}` }}
+                />
+            </ListItemIcon>
             {item.isEditing ? (
-                <>
+                <TextField
+                    fullWidth
+                    value={item.text}
+                    onChange={(e) => handleTextChange(index, e.target.value)}
+                    onBlur={() => handleEditEnd(index)}
+                    onKeyDown={(e) => {
+                        if (e.key === "Enter") handleEditEnd(index);
+                    }}
+                    autoFocus
+                    variant="standard"
+                    aria-label="Edit text field"
+                />
+            ) : (
+                <ListItemText
+                    id={`checkbox-list-label-${index}`}
+                    primary={item.text}
+                    sx={{ cursor: "pointer" }}
+                    onDoubleClick={() => handleEditStart(index)}
+                />
+            )}
+            <ListItemIcon>
+                {item.isEditing ? (
+                    <>
+                        <IconButton
+                            edge="end"
+                            aria-label="save"
+                            onClick={() => handleEditEnd(index)}
+                            size="small"
+                        >
+                            <CheckIcon />
+                        </IconButton>
+                    </>
+                ) : (
                     <IconButton
                         edge="end"
-                        aria-label="save"
-                        onClick={() => handleEditEnd(index)}
+                        aria-label="edit"
+                        onClick={() => handleEditStart(index)}
                         size="small"
                     >
-                        <CheckIcon />
+                        <EditIcon />
                     </IconButton>
-                </>
-            ) : (
+                )}
+            </ListItemIcon>
+            <ListItemIcon>
                 <IconButton
                     edge="end"
-                    aria-label="edit"
-                    onClick={() => handleEditStart(index)}
+                    aria-label="delete"
                     size="small"
+                    onClick={() => handleDeleteItem(index)}
                 >
-                    <EditIcon />
+                    <DeleteIcon />
                 </IconButton>
-            )}
-        </ListItemIcon>
-        <ListItemIcon>
-            <IconButton
-                edge="end"
-                aria-label="delete"
-                size="small"
-            >
-                <DeleteIcon />
-            </IconButton>
-        </ListItemIcon>
-    </ListItem>
-);
+            </ListItemIcon>
+        </ListItem>
+    );
+
+const shake = keyframes`
+0% { transform: translateX(0); }
+25% { transform: translateX(-5px); }
+50% { transform: translateX(5px); }
+75% { transform: translateX(-5px); }
+100% { transform: translateX(0); }
+`;
 
 function EditableList() {
     const [items, setItems] = useState([
@@ -143,6 +155,13 @@ function EditableList() {
             prev.map((item, i) => (i === index ? { ...item, isEditing: false } : item))
         );
 
+    const handleAddItem = () => {
+        setItems((prev) => [...prev, { text: "", checked: false, isEditing: true }]);
+    };
+
+    const handleDeleteItem = (index: number) =>
+        setItems((prev) => prev.filter((_, i) => i !== index));
+
     return (
         <Paper
             elevation={3}
@@ -154,9 +173,7 @@ function EditableList() {
             }}
         >
             <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 3 }}>
-                <Typography variant="h4" component="h1" gutterBottom>
-                Click here to type a title ✏
-                </Typography>
+                <TextField fullWidth label="Type List Title here📝" id="fullWidth" />
             </Box>
             <List sx={{ width: "100%", bgcolor: "background.paper" }}>
                 {items.map((item, index) => (
@@ -168,13 +185,31 @@ function EditableList() {
                         handleTextChange={handleTextChange}
                         handleEditStart={handleEditStart}
                         handleEditEnd={handleEditEnd}
+                        handleDeleteItem={handleDeleteItem}
                     />
                 ))}
             </List>
             <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
-                <IconButton aria-label="add">
+                <IconButton aria-label="add" onClick={handleAddItem}>
                     <AddIcon />
                 </IconButton>
+            </Box>
+            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
+                <Button
+                    variant="outlined"
+                    sx={{
+                        borderColor: 'black',
+                        color: 'black',
+                        '&:hover': {
+                            backgroundColor: 'black',
+                            color: 'white',
+                            animation: `${shake} 0.5s ease-in-out`,
+                        },
+                    }}
+                    aria-label="add"
+                >
+                    Create List
+                </Button>
             </Box>
         </Paper>
     );
@@ -185,11 +220,9 @@ const modalStyle = {
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    border: '2px solid #000',
     boxShadow: '1px 1px 10pxrgb(255, 255, 255)',
-    borderRadius: 4,
+    borderRadius: 6,
     p: 4,
-    backgroundColor: 'black',
     color: 'white',
     width: 800
 };
@@ -223,12 +256,16 @@ export default function basicModal() {
                     letterSpacing: '.3rem',
                     color: 'white',
                     borderColor: 'white',
+                    '&:hover': {
+                        backgroundColor: 'white',
+                        color: 'black',
+                        animation: `${shake} 0.5s ease-in-out`,
+                    },
                 }}
                 onClick={handleOpen}
             >
                 Create new list <AddIcon sx={{ marginLeft: 1 }} />
             </Button>
-
             <Modal open={open} onClose={handleClose}>
                 <Box sx={modalStyle}>
                     <EditableList />
