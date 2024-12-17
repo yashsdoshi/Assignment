@@ -18,27 +18,33 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
-  TextField,
   Typography,
+  TextField,
   Paper,
 } from "@mui/material";
 
-interface Item {
+interface ToDoList {
   id: string;
+  title: string;
+  tasks: Task[];
+}
+
+interface Task{
+  timeStamp: string;
   text: string;
   checked: boolean;
   isEditing: boolean;
 }
 
 const EditableListItem: React.FC<{
-  item: Item;
-  handleToggle: (id: string) => void;
-  handleTextChange: (id: string, newText: string) => void;
-  handleEditStart: (id: string) => void;
-  handleEditEnd: (id: string) => void;
-  handleDeleteItem: (id: string) => void;
+  task: Task;
+  handleToggle(id: string): void;
+  handleEditStart(id: string): void;
+  handleEditEnd(id: string): void;
+  handleTextChange(id: string, newText: string): void;
+  handleDeleteItem(id: string): void;
 }> = ({
-  item,
+  task,
   handleToggle,
   handleTextChange,
   handleEditStart,
@@ -49,27 +55,27 @@ const EditableListItem: React.FC<{
     dense
     divider
     role="listitem"
-    aria-label={`List item ${item.id}`}
+    aria-label={`List item ${task.timeStamp}`}
     sx={{
-      textDecoration: item.checked ? "line-through" : "none",
+      textDecoration: task.checked ? "line-through" : "none",
     }}
   >
     <ListItemIcon>
       <Checkbox
         edge="start"
-        checked={item.checked}
-        onChange={() => handleToggle(item.id)}
-        inputProps={{ "aria-labelledby": `checkbox-list-label-${item.id}` }}
+        checked={task.checked}
+        onChange={() => handleToggle(task.timeStamp)}
+        inputProps={{ "aria-labelledby": `checkbox-list-label-${task.timeStamp}` }}
       />
     </ListItemIcon>
-    {item.isEditing ? (
+    {task.isEditing ? (
       <TextField
         fullWidth
-        value={item.text}
-        onChange={(e) => handleTextChange(item.id, e.target.value)}
-        onBlur={() => handleEditEnd(item.id)}
+        value={task.text}
+        onChange={(e) => handleTextChange(task.timeStamp, e.target.value)}
+        onBlur={() => handleEditEnd(task.timeStamp)}
         onKeyDown={(e) => {
-          if (e.key === "Enter") handleEditEnd(item.id);
+          if (e.key === "Enter") handleEditEnd(task.timeStamp);
         }}
         autoFocus
         variant="standard"
@@ -77,18 +83,18 @@ const EditableListItem: React.FC<{
       />
     ) : (
       <ListItemText
-        id={`checkbox-list-label-${item.id}`}
-        primary={item.text}
+        id={`checkbox-list-label-${task.timeStamp}`}
+        primary={task.text}
         sx={{ cursor: "pointer" }}
-        onDoubleClick={() => handleEditStart(item.id)}
+        onDoubleClick={() => handleEditStart(task.timeStamp)}
       />
     )}
     <ListItemIcon>
-      {item.isEditing ? (
+      {task.isEditing ? (
         <IconButton
           edge="end"
           aria-label="save"
-          onClick={() => handleEditEnd(item.id)}
+          onClick={() => handleEditEnd(task.timeStamp)}
           size="small"
         >
           <CheckIcon />
@@ -97,7 +103,7 @@ const EditableListItem: React.FC<{
         <IconButton
           edge="end"
           aria-label="edit"
-          onClick={() => handleEditStart(item.id)}
+          onClick={() => handleEditStart(task.timeStamp)}
           size="small"
         >
           <EditIcon />
@@ -109,7 +115,7 @@ const EditableListItem: React.FC<{
         edge="end"
         aria-label="delete"
         size="small"
-        onClick={() => handleDeleteItem(item.id)}
+        onClick={() => handleDeleteItem(task.timeStamp)}
       >
         <DeleteIcon />
       </IconButton>
@@ -126,59 +132,79 @@ const shake = keyframes`
 `;
 
 function EditableList() {
-  const [items, setItems] = useState([
-    {
-      id: new Date().toISOString(),
-      text: "Type your task here👋 (Double click or click the edit icon)",
-      checked: false,
-      isEditing: false,
-    },
-  ]);
+const [toDoList, setToDoList] = useState<ToDoList>({
+    // id: new Date().toISOString(),
+    id: (Math.floor(Math.random() * 90000) + 10000).toString(),
+    title: "Welcome to ToDoist 📝",
+    tasks: [
+      {
+        timeStamp: new Date().toISOString(),
+        text: "Click on the Create new List button 👆 to create your first list ❗",
+        checked: false,
+        isEditing: false,
+      },
+    ],
+  });
 
-  const handleToggle = (id: string) =>
-    setItems((prev) =>
-      prev.map((item) =>
-        item.id === id ? { ...item, checked: !item.checked } : item
-      )
-    );
+  const handleToggle = (timeStamp: string) =>
+    setToDoList((prev) => ({
+      ...prev,
+      tasks: prev.tasks.map((item) =>
+        item.timeStamp === timeStamp ? { ...item, checked: !item.checked } : item
+      ),
+    }));
 
-  const handleTextChange = (id: string, newText: string) =>
-    setItems((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, text: newText } : item))
-    );
+  const handleTextChange = (timeStamp: string, newText: string) =>
+    setToDoList((prev) => ({
+      ...prev,
+      tasks: prev.tasks.map((item) =>
+        item.timeStamp === timeStamp ? { ...item, text: newText } : item
+      ),
+    }));
 
-  const handleEditStart = (id: string) =>
-    setItems((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, isEditing: true } : item))
-    );
+  const handleEditStart = (timeStamp: string) =>
+    setToDoList((prev) => ({
+      ...prev,
+      tasks: prev.tasks.map((item) =>
+        item.timeStamp === timeStamp ? { ...item, isEditing: true } : item
+      ),
+    }));
 
-  const handleEditEnd = (id: string) =>
-    setItems((prev) =>
-      prev.map((item) =>
-        item.id === id ? { ...item, isEditing: false } : item
-      )
-    );
+  const handleEditEnd = (timeStamp: string) =>
+    setToDoList((prev) => ({
+      ...prev,
+      tasks: prev.tasks.map((item) =>
+        item.timeStamp === timeStamp ? { ...item, isEditing: false } : item
+      ),
+    }));
 
   const handleAddItem = () => {
-    setItems((prev) => [
+    setToDoList((prev) => ({
       ...prev,
-      {
-        id: new Date().toISOString(),
-        text: "",
-        checked: false,
-        isEditing: true,
-      },
-    ]);
+      tasks: [
+        ...prev.tasks,
+        {
+          timeStamp: new Date().toISOString(),
+          text: "",
+          checked: false,
+          isEditing: true,
+        },
+      ],
+    }));
   };
 
-  const handleDeleteItem = (id: string) =>
-    setItems((prev) => prev.filter((item) => item.id !== id));
+  const handleDeleteItem = (timeStamp: string) =>
+    setToDoList((prev) => ({
+      ...prev,
+      tasks: prev.tasks.filter((item) => item.timeStamp !== timeStamp),
+    }));
 
-  return (
+    return (
     <Paper
       elevation={3}
       sx={{
-        maxWidth: 600,
+        maxWidth: 800,
+        minWidth: 700,
         margin: "24px auto",
         padding: 3,
         borderRadius: 2,
@@ -192,13 +218,13 @@ function EditableList() {
           mb: 3,
         }}
       >
-        <TextField fullWidth label="Type List Title here📝" id="fullWidth" />
+      <TextField fullWidth label="Type List Title here📝" id="fullWidth" />
       </Box>
       <List sx={{ width: "100%", bgcolor: "background.paper" }}>
-        {items.map((item) => (
+        {toDoList.tasks.map((item) => (
           <EditableListItem
-            key={item.id}
-            item={item}
+            key={item.timeStamp}
+            task={item}
             handleToggle={handleToggle}
             handleTextChange={handleTextChange}
             handleEditStart={handleEditStart}
@@ -211,23 +237,6 @@ function EditableList() {
         <IconButton aria-label="add" onClick={handleAddItem}>
           <AddIcon />
         </IconButton>
-      </Box>
-      <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
-        <Button
-          variant="outlined"
-          sx={{
-            borderColor: "black",
-            color: "black",
-            "&:hover": {
-              backgroundColor: "black",
-              color: "white",
-              animation: `${shake} 0.5s ease-in-out`,
-            },
-          }}
-          aria-label="add"
-        >
-          Create List
-        </Button>
       </Box>
     </Paper>
   );

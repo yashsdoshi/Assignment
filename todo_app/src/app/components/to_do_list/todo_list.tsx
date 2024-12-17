@@ -174,7 +174,8 @@ const EditMenu: React.FC = () => {
 
 export default function GenerateToDoList() {
   const [toDoList, setToDoList] = useState<ToDoList>({
-    id: new Date().toISOString(),
+    // id: new Date().toISOString(),
+    id: (Math.floor(Math.random() * 90000) + 10000).toString(),
     title: "Welcome to ToDoist 📝",
     tasks: [
       {
@@ -189,7 +190,7 @@ export default function GenerateToDoList() {
   const handleToggle = (timeStamp: string) =>
     setToDoList((prev) => ({
       ...prev,
-      items: prev.tasks.map((item) =>
+      tasks: prev.tasks.map((item) =>
         item.timeStamp === timeStamp ? { ...item, checked: !item.checked } : item
       ),
     }));
@@ -197,7 +198,7 @@ export default function GenerateToDoList() {
   const handleTextChange = (timeStamp: string, newText: string) =>
     setToDoList((prev) => ({
       ...prev,
-      items: prev.tasks.map((item) =>
+      tasks: prev.tasks.map((item) =>
         item.timeStamp === timeStamp ? { ...item, text: newText } : item
       ),
     }));
@@ -205,7 +206,7 @@ export default function GenerateToDoList() {
   const handleEditStart = (timeStamp: string) =>
     setToDoList((prev) => ({
       ...prev,
-      items: prev.tasks.map((item) =>
+      tasks: prev.tasks.map((item) =>
         item.timeStamp === timeStamp ? { ...item, isEditing: true } : item
       ),
     }));
@@ -213,7 +214,7 @@ export default function GenerateToDoList() {
   const handleEditEnd = (timeStamp: string) =>
     setToDoList((prev) => ({
       ...prev,
-      items: prev.tasks.map((item) =>
+      tasks: prev.tasks.map((item) =>
         item.timeStamp === timeStamp ? { ...item, isEditing: false } : item
       ),
     }));
@@ -221,7 +222,7 @@ export default function GenerateToDoList() {
   const handleAddItem = () => {
     setToDoList((prev) => ({
       ...prev,
-      items: [
+      tasks: [
         ...prev.tasks,
         {
           timeStamp: new Date().toISOString(),
@@ -236,7 +237,7 @@ export default function GenerateToDoList() {
   const handleDeleteItem = (timeStamp: string) =>
     setToDoList((prev) => ({
       ...prev,
-      items: prev.tasks.filter((item) => item.timeStamp !== timeStamp),
+      tasks: prev.tasks.filter((item) => item.timeStamp !== timeStamp),
     }));
 
   return (
