@@ -21,10 +21,6 @@ export default function Home() {
         }}
       >
         <ToDoList />
-        <ToDoList />
-        <ToDoList />
-        <ToDoList />
-        <ToDoList />
       </div>
       {/* <Login /> */}
     </>

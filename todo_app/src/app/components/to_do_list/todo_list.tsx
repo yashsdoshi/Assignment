@@ -6,7 +6,6 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import AddIcon from '@mui/icons-material/Add';
-
 import {
     Box,
     Checkbox,
@@ -21,6 +20,7 @@ import {
 } from "@mui/material";
 
 interface Item {
+    id: string;
     text: string;
     checked: boolean;
     isEditing: boolean;
@@ -28,94 +28,90 @@ interface Item {
 
 const EditableListItem: React.FC<{
     item: Item;
-    index: number;
-    handleToggle: (index: number) => void;
-    handleTextChange: (index: number, newText: string) => void;
-    handleEditStart: (index: number) => void;
-    handleEditEnd: (index: number) => void;
-    handleDeleteItem: (index: number) => void;
+    handleToggle(id: string): void;
+    handleEditStart(id: string): void;
+    handleEditEnd(id: string): void;
+    handleTextChange(id: string, newText: string): void;
+    handleDeleteItem(id: string): void;
 }> = ({
     item,
-    index,
     handleToggle,
     handleTextChange,
     handleEditStart,
     handleEditEnd,
     handleDeleteItem
 }) => (
-        <ListItem
-            dense
-            divider
-            role="listitem"
-            aria-label={`List item ${index + 1}`}
-            sx={{
-                textDecoration: item.checked ? "line-through" : "none"
-            }}
-        >
-            <ListItemIcon>
-                <Checkbox
-                    edge="start"
-                    checked={item.checked}
-                    onChange={() => handleToggle(index)}
-                    inputProps={{ "aria-labelledby": `checkbox-list-label-${index}` }}
-                />
-            </ListItemIcon>
+    <ListItem
+        dense
+        divider
+        role="listitem"
+        aria-label={`List item ${item.id}`}
+        sx={{
+            textDecoration: item.checked ? "line-through" : "none"
+        }}
+    >
+        <ListItemIcon>
+            <Checkbox
+                edge="start"
+                checked={item.checked}
+                onChange={() => handleToggle(item.id)}
+                inputProps={{ "aria-labelledby": `checkbox-list-label-${item.id}` }}
+            />
+        </ListItemIcon>
+        {item.isEditing ? (
+            <TextField
+                fullWidth
+                value={item.text}
+                onChange={(e) => handleTextChange(item.id, e.target.value)}
+                onBlur={() => handleEditEnd(item.id)}
+                onKeyDown={(e) => {
+                    if (e.key === "Enter") handleEditEnd(item.id);
+                }}
+                autoFocus
+                variant="standard"
+                aria-label="Edit text field"
+            />
+        ) : (
+            <ListItemText
+                id={`checkbox-list-label-${item.id}`}
+                primary={item.text}
+                sx={{ cursor: "pointer" }}
+                onDoubleClick={() => handleEditStart(item.id)}
+            />
+        )}
+        <ListItemIcon>
             {item.isEditing ? (
-                <TextField
-                    fullWidth
-                    value={item.text}
-                    onChange={(e) => handleTextChange(index, e.target.value)}
-                    onBlur={() => handleEditEnd(index)}
-                    onKeyDown={(e) => {
-                        if (e.key === "Enter") handleEditEnd(index);
-                    }}
-                    autoFocus
-                    variant="standard"
-                    aria-label="Edit text field"
-                />
+                <IconButton
+                    edge="end"
+                    aria-label="save"
+                    onClick={() => handleEditEnd(item.id)}
+                    size="small"
+                >
+                    <CheckIcon />
+                </IconButton>
             ) : (
-                <ListItemText
-                    id={`checkbox-list-label-${index}`}
-                    primary={item.text}
-                    sx={{ cursor: "pointer" }}
-                    onDoubleClick={() => handleEditStart(index)}
-                />
+                <IconButton
+                    edge="end"
+                    aria-label="edit"
+                    onClick={() => handleEditStart(item.id)}
+                    size="small"
+                >
+                    <EditIcon />
+                </IconButton>
             )}
-            <ListItemIcon>
-                {item.isEditing ? (
-                    <>
-                        <IconButton
-                            edge="end"
-                            aria-label="save"
-                            onClick={() => handleEditEnd(index)}
-                            size="small"
-                        >
-                            <CheckIcon />
-                        </IconButton>
-                    </>
-                ) : (
-                    <IconButton
-                        edge="end"
-                        aria-label="edit"
-                        onClick={() => handleEditStart(index)}
-                        size="small"
-                    >
-                        <EditIcon />
-                    </IconButton>
-                )}
-            </ListItemIcon>
-            <ListItemIcon>
-        <IconButton
+        </ListItemIcon>
+        <ListItemIcon>
+            <IconButton
                 edge="end"
                 aria-label="delete"
                 size="small"
-                onClick={() => handleDeleteItem(index)}
+                onClick={() => handleDeleteItem(item.id)}
             >
                 <DeleteIcon />
             </IconButton>
         </ListItemIcon>
-        </ListItem>
-    );
+    </ListItem>
+);
 
 const LongMenu: React.FC = () => {
 
@@ -175,40 +171,40 @@ const LongMenu: React.FC = () => {
 };
 
 export default function EditableList() {
-    const [items, setItems] = useState([
-        { text: "Click on the Create new List button 👆 to create your first list ❗", checked: false, isEditing: false },
-        { text: "This list would be deleted once you created new list ❗", checked: false, isEditing: false },
+    const [items, setItems] = useState<Item[]>([
+        { id: new Date().toISOString(), text: "Click on the Create new List button 👆 to create your first list ❗", checked: false, isEditing: false },
+        { id: new Date().toISOString(), text: "This list would be deleted once you created new list ❗", checked: false, isEditing: false },
     ]);
 
-    const handleToggle = (index: number) =>
+    const handleToggle = (id: string) =>
         setItems((prev) =>
-            prev.map((item, i) =>
-                i === index ? { ...item, checked: !item.checked } : item
+            prev.map((item) =>
+                item.id === id ? { ...item, checked: !item.checked } : item
             )
         );
 
-    const handleTextChange = (index: number, newText: string) =>
+    const handleTextChange = (id: string, newText: string) =>
         setItems((prev) =>
-            prev.map((item, i) => (i === index ? { ...item, text: newText } : item))
+            prev.map((item) => (item.id === id ? { ...item, text: newText } : item))
         );
 
-    const handleEditStart = (index: number) =>
+    const handleEditStart = (id: string) =>
         setItems((prev) =>
-            prev.map((item, i) => (i === index ? { ...item, isEditing: true } : item))
+            prev.map((item) => (item.id === id ? { ...item, isEditing: true } : item))
         );
 
-    const handleEditEnd = (index: number) =>
+    const handleEditEnd = (id: string) =>
         setItems((prev) =>
-            prev.map((item, i) => (i === index ? { ...item, isEditing: false } : item))
+            prev.map((item) => (item.id === id ? { ...item, isEditing: false } : item))
         );
 
     const handleAddItem = () => {
-        setItems((prev) => [...prev, { text: "", checked: false, isEditing: true }]);
+        setItems((prev) => [...prev, { id: new Date().toISOString(), text: "", checked: false, isEditing: true }]);
     };
 
-    const handleDeleteItem = (index: number) =>
-        setItems((prev) => prev.filter((_, i) => i !== index));
-    
+    const handleDeleteItem = (id: string) =>
+        setItems((prev) => prev.filter((item) => item.id !== id));
+
     return (
         <Paper
             elevation={3}
@@ -226,11 +222,10 @@ export default function EditableList() {
                 <LongMenu />
             </Box>
             <List sx={{ width: "100%", bgcolor: "background.paper" }}>
-                {items.map((item, index) => (
+                {items.map((item) => (
                     <EditableListItem
-                        key={index}
+                        key={item.id}
                         item={item}
-                        index={index}
                         handleToggle={handleToggle}
                         handleTextChange={handleTextChange}
                         handleEditStart={handleEditStart}
