@@ -133,15 +133,24 @@ const EditableListItem: React.FC<{
   );
 };
 
-const EditableList = () => {
+const EditableList = ({
+  newTitle,
+  setNewTitle,
+  handleAddItem,
+  toDoListId,
+}: {
+  newTitle: string;
+  setNewTitle: React.Dispatch<React.SetStateAction<string>>;
+  handleAddItem: () => void;
+  toDoListId: number;
+}) => {
+  const [newTaskText, setNewTaskText] = useState("");
   const dispatch = useDispatch();
-  const toDoLists = useSelector((state: RootState) => state.task.lists);
-  const [newTitle, setNewTitle] = useState("");
 
-  const handleAddItem = () => {
-    if (newTitle.trim()) {
-      dispatch(addList(newTitle));
-      setNewTitle("");
+  const handleAddTask = () => {
+    if (newTaskText.trim()) {
+      dispatch(addTask({ listId: toDoListId, text: newTaskText }));
+      setNewTaskText("");
     }
   };
 
@@ -164,35 +173,39 @@ const EditableList = () => {
           mb: 3,
         }}
       >
-        <TextField fullWidth label="Type List Title here📝" value={newTitle} onChange={(e) => setNewTitle(e.target.value)} />
+        <TextField
+          fullWidth
+          label="Type List Title here📝"
+          value={newTitle}
+          onChange={(e) => setNewTitle(e.target.value)}
+        />
       </Box>
-      <List sx={{ width: "100%", bgcolor: "background.paper" }}>
-        {toDoLists.map((toDoList) => (
-          <div key={toDoList.id}>
-            <h3>{toDoList.title}</h3>
-            {toDoList.tasks.map((task) => (
-              <EditableListItem
-                key={task.timeStamp}
-                task={task}
-                toDoListId={toDoList.id}
-              />
-            ))}
-          </div>
-        ))}
-      </List>
-      <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
-        <IconButton aria-label="add" onClick={handleAddItem}>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <TextField
+          fullWidth
+          label="Add a Task"
+          value={newTaskText}
+          onChange={(e) => setNewTaskText(e.target.value)}
+        />
+        <IconButton aria-label="add-task" onClick={handleAddTask}>
           <AddIcon />
         </IconButton>
       </Box>
       <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
         <Button
+          onClick={handleAddItem}
           sx={{
             color: "white",
             backgroundColor: "black",
-        "&:hover": {
-          animation: `${shake} 0.5s ease-in-out`,
-        },
+            "&:hover": {
+              animation: `${shake} 0.5s ease-in-out`,
+            },
           }}
         >
           Add List
@@ -215,19 +228,23 @@ const modalStyle = {
 };
 
 export default function BasicModal() {
+  const dispatch = useDispatch();
   const [open, setOpen] = React.useState(false);
+  const [newTitle, setNewTitle] = React.useState('');
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
+  const handleAddItem = () => {
+    if (newTitle.trim()) {
+      dispatch(addList(newTitle));
+      setNewTitle('');
+      handleClose();
+    }
+  };
+
   return (
-    <Box
-      display="flex"
-      justifyContent="center"
-      alignItems="center"
-      mt={2}
-      sx={{ color: "white" }}
-    >
+    <Box display="flex" justifyContent="center" alignItems="center" mt={2} sx={{ color: 'white' }}>
       <Button
         variant="outlined"
         sx={{
@@ -236,12 +253,12 @@ export default function BasicModal() {
           borderWidth: 3,
           borderRadius: 5,
           width: 500,
-          letterSpacing: ".3rem",
-          color: "white",
-          borderColor: "white",
+          letterSpacing: '.3rem',
+          color: 'white',
+          borderColor: 'white',
           "&:hover": {
-            backgroundColor: "white",
-            color: "black",
+            backgroundColor: 'white',
+            color: 'black',
             animation: `${shake} 0.5s ease-in-out`,
           },
         }}
@@ -249,13 +266,19 @@ export default function BasicModal() {
       >
         Create new list <AddIcon sx={{ marginLeft: 1 }} />
       </Button>
+
       <Modal open={open} onClose={handleClose}>
         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
           <Box sx={modalStyle}>
-            <EditableList />
+            <EditableList
+              newTitle={newTitle}
+              setNewTitle={setNewTitle}
+              handleAddItem={handleAddItem}
+              toDoListId={listId}
+            />
           </Box>
         </Box>
       </Modal>
     </Box>
   );
-}
+};

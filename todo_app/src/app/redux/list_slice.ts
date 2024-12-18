@@ -27,12 +27,13 @@ const taskSlice = createSlice({
     reducers: {
         addList(state, action: PayloadAction<string>) {
             const newList: ToDoList = {
-                id: (Math.floor(Math.random() * 90000) + 10000),
-                title: action.payload,
-                tasks: [],
+              id: Math.floor(Math.random() * 90000) + 10000,
+              title: action.payload, 
+              tasks: [],
             };
             state.lists.push(newList);
-        },
+          },
+                    
         removeList(state, action: PayloadAction<number>) {
             state.lists = state.lists.filter((list) => list.id !== action.payload);
         },
@@ -49,7 +50,7 @@ const taskSlice = createSlice({
                     timeStamp: new Date().toISOString(),
                     text: action.payload.text,
                     checked: false,
-                    isEditing: false,
+                    isEditing: true,
                 };
                 list.tasks.push(newTask);
             }
