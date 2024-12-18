@@ -1,11 +1,11 @@
-"use client";
 import * as React from "react";
 import { useState } from "react";
 import Button from "@mui/material/Button";
 import Modal from "@mui/material/Modal";
 import AddIcon from "@mui/icons-material/Add";
-import { useAppDispatch } from "@/app/redux/hooks";
-import { addTask } from "@/app/redux/list_slice";
+import { RootState } from "@/app/redux/store";
+import { useDispatch, useSelector } from "react-redux";
+import { addList, addTask, completeTask, editTask, removeTask } from "@/app/redux/list_slice";
 import EditIcon from "@mui/icons-material/Edit";
 import CheckIcon from "@mui/icons-material/Check";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -22,12 +22,6 @@ import {
   Paper,
 } from "@mui/material";
 
-interface ToDoList {
-  id: string;
-  title: string;
-  tasks: Task[];
-}
-
 interface Task {
   timeStamp: string;
   text: string;
@@ -35,21 +29,37 @@ interface Task {
   isEditing: boolean;
 }
 
+const shake = keyframes`
+0% { transform: translateX(0); }
+25% { transform: translateX(-5px); }
+50% { transform: translateX(5px); }
+75% { transform: translateX(-5px); }
+100% { transform: translateX(0); }
+`;
+
 const EditableListItem: React.FC<{
   task: Task;
-  handleToggle(id: string): void;
-  handleEditStart(id: string): void;
-  handleEditEnd(id: string): void;
-  handleTextChange(id: string, newText: string): void;
-  handleDeleteItem(id: string): void;
-}> = ({
-  task,
-  handleToggle,
-  handleTextChange,
-  handleEditStart,
-  handleEditEnd,
-  handleDeleteItem,
-}) => (
+  toDoListId: number;
+}> = ({ task, toDoListId }) => {
+  const dispatch = useDispatch();
+
+  const handleToggle = () => {
+    dispatch(completeTask({ listId: toDoListId, timeStamp: task.timeStamp }));
+  };
+
+  const handleEditStart = () => {
+    dispatch(editTask({ listId: toDoListId, timeStamp: task.timeStamp, text: task.text }));
+  };
+
+  const handleEditEnd = (newText: string) => {
+    dispatch(editTask({ listId: toDoListId, timeStamp: task.timeStamp, text: newText }));
+  };
+
+  const handleDeleteItem = () => {
+    dispatch(removeTask({ listId: toDoListId, timeStamp: task.timeStamp }));
+  };
+
+  return (
     <ListItem
       dense
       divider
@@ -63,7 +73,7 @@ const EditableListItem: React.FC<{
         <Checkbox
           edge="start"
           checked={task.checked}
-          onChange={() => handleToggle(task.timeStamp)}
+          onChange={handleToggle}
           inputProps={{ "aria-labelledby": `checkbox-list-label-${task.timeStamp}` }}
         />
       </ListItemIcon>
@@ -71,10 +81,10 @@ const EditableListItem: React.FC<{
         <TextField
           fullWidth
           value={task.text}
-          onChange={(e) => handleTextChange(task.timeStamp, e.target.value)}
-          onBlur={() => handleEditEnd(task.timeStamp)}
+          onChange={(e) => handleEditStart()}
+          onBlur={() => handleEditEnd(task.text)}
           onKeyDown={(e) => {
-            if (e.key === "Enter") handleEditEnd(task.timeStamp);
+            if (e.key === "Enter") handleEditEnd(task.text);
           }}
           autoFocus
           variant="standard"
@@ -85,7 +95,7 @@ const EditableListItem: React.FC<{
           id={`checkbox-list-label-${task.timeStamp}`}
           primary={task.text}
           sx={{ cursor: "pointer" }}
-          onDoubleClick={() => handleEditStart(task.timeStamp)}
+          onDoubleClick={handleEditStart}
         />
       )}
       <ListItemIcon>
@@ -93,7 +103,7 @@ const EditableListItem: React.FC<{
           <IconButton
             edge="end"
             aria-label="save"
-            onClick={() => handleEditEnd(task.timeStamp)}
+            onClick={() => handleEditEnd(task.text)}
             size="small"
           >
             <CheckIcon />
@@ -102,7 +112,7 @@ const EditableListItem: React.FC<{
           <IconButton
             edge="end"
             aria-label="edit"
-            onClick={() => handleEditStart(task.timeStamp)}
+            onClick={handleEditStart}
             size="small"
           >
             <EditIcon />
@@ -114,89 +124,26 @@ const EditableListItem: React.FC<{
           edge="end"
           aria-label="delete"
           size="small"
-          onClick={() => handleDeleteItem(task.timeStamp)}
+          onClick={handleDeleteItem}
         >
           <DeleteIcon />
         </IconButton>
       </ListItemIcon>
     </ListItem>
   );
+};
 
-const shake = keyframes`
-0% { transform: translateX(0); }
-25% { transform: translateX(-5px); }
-50% { transform: translateX(5px); }
-75% { transform: translateX(-5px); }
-100% { transform: translateX(0); }
-`;
-
-function EditableList() {
-  const [toDoList, setToDoList] = useState<ToDoList>({
-    // id: new Date().toISOString(),
-    id: (Math.floor(Math.random() * 90000) + 10000).toString(),
-    title: "Welcome to ToDoist 📝",
-    tasks: [
-      {
-        timeStamp: new Date().toISOString(),
-        text: "Click on the Create new List button 👆 to create your first list ❗",
-        checked: false,
-        isEditing: false,
-      },
-    ],
-  });
-
-  const handleToggle = (timeStamp: string) =>
-    setToDoList((prev) => ({
-      ...prev,
-      tasks: prev.tasks.map((item) =>
-        item.timeStamp === timeStamp ? { ...item, checked: !item.checked } : item
-      ),
-    }));
-
-  const handleTextChange = (timeStamp: string, newText: string) =>
-    setToDoList((prev) => ({
-      ...prev,
-      tasks: prev.tasks.map((item) =>
-        item.timeStamp === timeStamp ? { ...item, text: newText } : item
-      ),
-    }));
-
-  const handleEditStart = (timeStamp: string) =>
-    setToDoList((prev) => ({
-      ...prev,
-      tasks: prev.tasks.map((item) =>
-        item.timeStamp === timeStamp ? { ...item, isEditing: true } : item
-      ),
-    }));
-
-  const handleEditEnd = (timeStamp: string) =>
-    setToDoList((prev) => ({
-      ...prev,
-      tasks: prev.tasks.map((item) =>
-        item.timeStamp === timeStamp ? { ...item, isEditing: false } : item
-      ),
-    }));
+const EditableList = () => {
+  const dispatch = useDispatch();
+  const toDoLists = useSelector((state: RootState) => state.task.lists);
+  const [newTitle, setNewTitle] = useState("");
 
   const handleAddItem = () => {
-    setToDoList((prev) => ({
-      ...prev,
-      tasks: [
-        ...prev.tasks,
-        {
-          timeStamp: new Date().toISOString(),
-          text: "",
-          checked: false,
-          isEditing: true,
-        },
-      ],
-    }));
+    if (newTitle.trim()) {
+      dispatch(addList(newTitle));
+      setNewTitle("");
+    }
   };
-
-  const handleDeleteItem = (timeStamp: string) =>
-    setToDoList((prev) => ({
-      ...prev,
-      tasks: prev.tasks.filter((item) => item.timeStamp !== timeStamp),
-    }));
 
   return (
     <Paper
@@ -217,19 +164,20 @@ function EditableList() {
           mb: 3,
         }}
       >
-        <TextField fullWidth label="Type List Title here📝" id="fullWidth" />
+        <TextField fullWidth label="Type List Title here📝" value={newTitle} onChange={(e) => setNewTitle(e.target.value)} />
       </Box>
       <List sx={{ width: "100%", bgcolor: "background.paper" }}>
-        {toDoList.tasks.map((item) => (
-          <EditableListItem
-            key={item.timeStamp}
-            task={item}
-            handleToggle={handleToggle}
-            handleTextChange={handleTextChange}
-            handleEditStart={handleEditStart}
-            handleEditEnd={handleEditEnd}
-            handleDeleteItem={handleDeleteItem}
-          />
+        {toDoLists.map((toDoList) => (
+          <div key={toDoList.id}>
+            <h3>{toDoList.title}</h3>
+            {toDoList.tasks.map((task) => (
+              <EditableListItem
+                key={task.timeStamp}
+                task={task}
+                toDoListId={toDoList.id}
+              />
+            ))}
+          </div>
         ))}
       </List>
       <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
@@ -237,22 +185,9 @@ function EditableList() {
           <AddIcon />
         </IconButton>
       </Box>
-      <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
-        <Button
-          sx={{
-            color: "white",
-            backgroundColor: "black",
-        "&:hover": {
-          animation: `${shake} 0.5s ease-in-out`,
-        },
-          }}
-        >
-          Add List
-        </Button>
-      </Box>
     </Paper>
   );
-}
+};
 
 const modalStyle = {
   position: "absolute",
@@ -266,19 +201,11 @@ const modalStyle = {
   width: 800,
 };
 
-export default function basicModal() {
+export default function BasicModal() {
   const [open, setOpen] = React.useState(false);
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-
-  // const handleAddTask = () => {
-  //   if (taskTitle.trim()) {
-  //     dispatch(addTask(taskTitle));
-  //     setTaskTitle("");
-  //     handleClose();
-  //   }
-  // };
 
   return (
     <Box
@@ -316,6 +243,6 @@ export default function basicModal() {
           </Box>
         </Box>
       </Modal>
-    </Box >
+    </Box>
   );
 }

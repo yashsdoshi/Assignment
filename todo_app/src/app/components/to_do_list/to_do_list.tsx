@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "@/app/redux/store"; // Adjust the import based on your project structure
+import { RootState } from "@/app/redux/store";
 import { addTask, completeTask, editTask, removeTask, removeList, renameList } from "@/app/redux/list_slice";
 import EditIcon from "@mui/icons-material/Edit";
 import CheckIcon from "@mui/icons-material/Check";
@@ -187,7 +187,7 @@ const EditMenu: React.FC<{ toDoListId: number }> = ({ toDoListId }) => {
         <MenuItem onClick={() => dispatch(removeList(toDoListId))}>Delete list</MenuItem>
       </Menu>
 
-      <Modal open={open} onClose={handleCloseModal}>
+    <Modal open={open} onClose={handleCloseModal}>
         <Box
           sx={{
             position: "absolute",
