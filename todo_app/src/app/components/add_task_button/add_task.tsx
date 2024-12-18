@@ -185,6 +185,19 @@ const EditableList = () => {
           <AddIcon />
         </IconButton>
       </Box>
+      <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
+        <Button
+          sx={{
+            color: "white",
+            backgroundColor: "black",
+        "&:hover": {
+          animation: `${shake} 0.5s ease-in-out`,
+        },
+          }}
+        >
+          Add List
+        </Button>
+      </Box>
     </Paper>
   );
 };

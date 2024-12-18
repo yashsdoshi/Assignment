@@ -1,5 +1,5 @@
 import React from "react";
-import AddTask from "./temp";
+import AddTask from "./add_task";
 export default function addTaskPage() 
 {
   return (
