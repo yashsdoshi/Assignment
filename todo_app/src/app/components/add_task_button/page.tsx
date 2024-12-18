@@ -1,6 +1,6 @@
 import React from "react";
 import AddTask from "./add_task";
-export default function addTask() 
+export default function addTaskPage() 
 {
   return (
         <AddTask />

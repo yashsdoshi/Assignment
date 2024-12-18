@@ -1,23 +1,23 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-interface ToDoList {
-    id: string;
-    title: string;
-    tasks: Task[];
-  }
-  
-interface Task{
-timeStamp: string;
-text: string;
-checked: boolean;
-isEditing: boolean;
+interface Task {
+    timeStamp: string;
+    text: string;
+    checked: boolean;
+    isEditing: boolean;
 }
 
-interface taskState {
-    lists: ToDoList[];
-};
+interface ToDoList {
+    id: number;
+    title: string;
+    tasks: Task[];
+}
 
-const initialState: taskState = {
+interface TaskState {
+    lists: ToDoList[];
+}
+
+const initialState: TaskState = {
     lists: [],
 };
 
@@ -25,31 +25,61 @@ const taskSlice = createSlice({
     name: 'task',
     initialState,
     reducers: {
-        addTask(state, action: PayloadAction<string>) {
-            const newTask: Task = {
-                id: new Date().toISOString(),
+        addList(state, action: PayloadAction<string>) {
+            const newList: ToDoList = {
+                id: (Math.floor(Math.random() * 90000) + 10000),
                 title: action.payload,
-                completed: false,
+                tasks: [],
             };
-            state.tasks.push(newTask);
+            state.lists.push(newList);
         },
-        removeTask(state, action: PayloadAction<string>) {
-            state.tasks = state.tasks.filter((task) => task.id !== action.payload);
+        removeList(state, action: PayloadAction<number>) {
+            state.lists = state.lists.filter((list) => list.id !== action.payload);
         },
-        editTask(state, action: PayloadAction<string>) {
-            
+        renameList(state, action: PayloadAction<{ id: number; title: string }>) {
+            const list = state.lists.find((list) => list.id === action.payload.id);
+            if (list) {
+                list.title = action.payload.title;
+            }
         },
-        completeTask(){
-            
+        addTask(state, action: PayloadAction<{ listId: number; text: string }>) {
+            const list = state.lists.find((list) => list.id === action.payload.listId);
+            if (list) {
+                const newTask: Task = {
+                    timeStamp: new Date().toISOString(),
+                    text: action.payload.text,
+                    checked: false,
+                    isEditing: false,
+                };
+                list.tasks.push(newTask);
+            }
         },
-        renameList(){
-
+        removeTask(state, action: PayloadAction<{ listId: number; timeStamp: string }>) {
+            const list = state.lists.find((list) => list.id === action.payload.listId);
+            if (list) {
+                list.tasks = list.tasks.filter((task) => task.timeStamp !== action.payload.timeStamp);
+            }
         },
-        deleteList(){
-
+        editTask(state, action: PayloadAction<{ listId: number; timeStamp: string; text: string }>) {
+            const list = state.lists.find((list) => list.id === action.payload.listId);
+            if (list) {
+                const task = list.tasks.find((task) => task.timeStamp === action.payload.timeStamp);
+                if (task) {
+                    task.text = action.payload.text;
+                }
+            }
         },
-    }
+        completeTask(state, action: PayloadAction<{ listId: number; timeStamp: string }>) {
+            const list = state.lists.find((list) => list.id === action.payload.listId);
+            if (list) {
+                const task = list.tasks.find((task) => task.timeStamp === action.payload.timeStamp);
+                if (task) {
+                    task.checked = !task.checked;
+                }
+            }
+        },
+    },
 });
 
-export const { addTask, removeTask, editTask, completeTask, renameList, deleteList } = taskSlice.actions;
+export const { addList, removeList, renameList, addTask, removeTask, editTask, completeTask } = taskSlice.actions;
 export default taskSlice.reducer;
