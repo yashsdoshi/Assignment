@@ -25,15 +25,14 @@ const taskSlice = createSlice({
     name: 'task',
     initialState,
     reducers: {
-        addList(state, action: PayloadAction<string>) {
+        addList(state, action: PayloadAction<{title: string, listId: number}>, ) {
             const newList: ToDoList = {
-              id: Math.floor(Math.random() * 90000) + 10000,
-              title: action.payload, 
+              id: action.payload.listId,
+              title: action.payload.title, 
               tasks: [],
             };
             state.lists.push(newList);
-          },
-                    
+          },       
         removeList(state, action: PayloadAction<number>) {
             state.lists = state.lists.filter((list) => list.id !== action.payload);
         },
