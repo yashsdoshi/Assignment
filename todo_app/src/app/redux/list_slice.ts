@@ -68,10 +68,10 @@ const taskSlice = createSlice({
                     if (action.payload.text !== undefined) {
                         task.text = action.payload.text;
                     }
-                    task.isEditing = !task.isEditing; // Toggle editing state
+                    task.isEditing = action.payload.text === undefined ? !task.isEditing : false;
                 }
             }
-        },        
+        },             
         completeTask(state, action: PayloadAction<{ listId: number; timeStamp: string }>) {
             const list = state.lists.find((list) => list.id === action.payload.listId);
             if (list) {

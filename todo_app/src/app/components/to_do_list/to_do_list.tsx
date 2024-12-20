@@ -43,7 +43,9 @@ const EditableListItem: React.FC<{
   };
 
   const handleEditStart = () => {
-    dispatch(editTask({ listId: toDoListId, timeStamp: task.timeStamp }));
+    if (!task.isEditing) {
+      dispatch(editTask({ listId: toDoListId, timeStamp: task.timeStamp }));
+    }
   };
 
   const handleEditEnd = () => {
@@ -53,6 +55,7 @@ const EditableListItem: React.FC<{
       dispatch(editTask({ listId: toDoListId, timeStamp: task.timeStamp }));
     }
   };
+
 
   const handleDeleteItem = () => {
     dispatch(removeTask({ listId: toDoListId, timeStamp: task.timeStamp }));
@@ -257,7 +260,11 @@ export default function GenerateToDoList() {
           </Box>
           <List sx={{ width: "100%", bgcolor: "background.paper" }}>
             {toDoList.tasks.map((task) => (
-              <EditableListItem key={task.timeStamp} task={task} toDoListId={toDoList.id} />
+              <EditableListItem
+              key={`${toDoList.id}-${task.timeStamp}`}
+              task={task}
+              toDoListId={toDoList.id}
+          />          
             ))}
           </List>
           <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
