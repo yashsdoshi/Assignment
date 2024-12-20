@@ -224,7 +224,7 @@ const EditMenu: React.FC<{ toDoListId: number }> = ({ toDoListId }) => {
   );
 };
 
-export default function GenerateToDoList() {
+export default function ToDoList() {
   const dispatch = useDispatch();
   const toDoLists = useSelector((state: RootState) => state.task.lists);
 
@@ -264,7 +264,8 @@ export default function GenerateToDoList() {
               key={`${toDoList.id}-${task.timeStamp}`}
               task={task}
               toDoListId={toDoList.id}
-          />          
+          />
+          
             ))}
           </List>
           <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
