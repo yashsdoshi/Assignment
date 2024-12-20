@@ -224,12 +224,19 @@ const EditMenu: React.FC<{ toDoListId: number }> = ({ toDoListId }) => {
   );
 };
 
-export default function ToDoList() {
-  const dispatch = useDispatch();
-  const toDoLists = useSelector((state: RootState) => state.task.lists);
+interface ToDoListProps {
+  toDoList: {
+    id: number;
+    title: string;
+    tasks: Task[];
+  };
+}
 
-  const handleAddItem = (listId: number) => {
-    dispatch(addTask({ listId, text: "" }));
+export default function ToDoList({ toDoList }: ToDoListProps) {
+  const dispatch = useDispatch();
+
+  const handleAddItem = () => {
+    dispatch(addTask({ listId: toDoList.id, text: "" }));
   };
 
   return (
@@ -243,38 +250,35 @@ export default function ToDoList() {
         borderRadius: 2,
       }}
     >
-      {toDoLists.map((toDoList) => (
-        <Box key={toDoList.id} sx={{ marginBottom: 3 }}>
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              mb: 3,
-            }}
-          >
-            <Typography variant="h4" component="h1" gutterBottom>
-              {toDoList.title}
-            </Typography>
-            <EditMenu toDoListId={toDoList.id} />
-          </Box>
-          <List sx={{ width: "100%", bgcolor: "background.paper" }}>
-            {toDoList.tasks.map((task) => (
-              <EditableListItem
+      <Box sx={{ marginBottom: 3 }}>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            mb: 3,
+          }}
+        >
+          <Typography variant="h4" component="h1" gutterBottom>
+            {toDoList.title}
+          </Typography>
+          <EditMenu toDoListId={toDoList.id} />
+        </Box>
+        <List sx={{ width: "100%", bgcolor: "background.paper" }}>
+          {toDoList.tasks.map((task) => (
+            <EditableListItem
               key={`${toDoList.id}-${task.timeStamp}`}
               task={task}
               toDoListId={toDoList.id}
-          />
-          
-            ))}
-          </List>
-          <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
-            <IconButton aria-label="add" onClick={() => handleAddItem(toDoList.id)}>
-              <AddIcon />
-            </IconButton>
-          </Box>
+            />
+          ))}
+        </List>
+        <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
+          <IconButton aria-label="add" onClick={handleAddItem}>
+            <AddIcon />
+          </IconButton>
         </Box>
-      ))}
+      </Box>
     </Paper>
   );
 }
