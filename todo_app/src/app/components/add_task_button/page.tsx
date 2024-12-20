@@ -1,5 +1,5 @@
 import React from "react";
-import AddList from "./add_list";
+import AddList from "./temp";
 export default function addTaskPage() {
   return (
     <AddList />
