@@ -60,15 +60,18 @@ const taskSlice = createSlice({
                 list.tasks = list.tasks.filter((task) => task.timeStamp !== action.payload.timeStamp);
             }
         },
-        editTask(state, action: PayloadAction<{ listId: number; timeStamp: string; text: string }>) {
+        editTask(state, action: PayloadAction<{ listId: number; timeStamp: string; text?: string }>) {
             const list = state.lists.find((list) => list.id === action.payload.listId);
             if (list) {
                 const task = list.tasks.find((task) => task.timeStamp === action.payload.timeStamp);
                 if (task) {
-                    task.text = action.payload.text;
+                    if (action.payload.text !== undefined) {
+                        task.text = action.payload.text;
+                    }
+                    task.isEditing = !task.isEditing; // Toggle editing state
                 }
             }
-        },
+        },        
         completeTask(state, action: PayloadAction<{ listId: number; timeStamp: string }>) {
             const list = state.lists.find((list) => list.id === action.payload.listId);
             if (list) {

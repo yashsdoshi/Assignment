@@ -36,17 +36,22 @@ const EditableListItem: React.FC<{
   toDoListId: number;
 }> = ({ task, toDoListId }) => {
   const dispatch = useDispatch();
+  const [editText, setEditText] = useState(task.text);
 
   const handleToggle = () => {
     dispatch(completeTask({ listId: toDoListId, timeStamp: task.timeStamp }));
   };
 
   const handleEditStart = () => {
-    dispatch(editTask({ listId: toDoListId, timeStamp: task.timeStamp, text: task.text }));
+    dispatch(editTask({ listId: toDoListId, timeStamp: task.timeStamp }));
   };
 
-  const handleEditEnd = (newText: string) => {
-    dispatch(editTask({ listId: toDoListId, timeStamp: task.timeStamp, text: newText }));
+  const handleEditEnd = () => {
+    if (editText.trim() !== task.text) {
+      dispatch(editTask({ listId: toDoListId, timeStamp: task.timeStamp, text: editText }));
+    } else {
+      dispatch(editTask({ listId: toDoListId, timeStamp: task.timeStamp }));
+    }
   };
 
   const handleDeleteItem = () => {
@@ -76,11 +81,11 @@ const EditableListItem: React.FC<{
       {task.isEditing ? (
         <TextField
           fullWidth
-          value={task.text}
-          onChange={(e) => handleEditStart()}
-          onBlur={() => handleEditEnd(task.text)}
+          value={editText}
+          onChange={(e) => setEditText(e.target.value)}
+          onBlur={handleEditEnd}
           onKeyDown={(e) => {
-            if (e.key === "Enter") handleEditEnd(task.text);
+            if (e.key === "Enter") handleEditEnd();
           }}
           autoFocus
           variant="standard"
@@ -99,7 +104,7 @@ const EditableListItem: React.FC<{
           <IconButton
             edge="end"
             aria-label="save"
-            onClick={() => handleEditEnd(task.text)}
+            onClick={handleEditEnd}
             size="small"
           >
             <CheckIcon />
@@ -187,7 +192,7 @@ const EditMenu: React.FC<{ toDoListId: number }> = ({ toDoListId }) => {
         <MenuItem onClick={() => dispatch(removeList(toDoListId))}>Delete list</MenuItem>
       </Menu>
 
-    <Modal open={open} onClose={handleCloseModal}>
+      <Modal open={open} onClose={handleCloseModal}>
         <Box
           sx={{
             position: "absolute",
