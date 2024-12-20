@@ -5,7 +5,7 @@ import Button from "@mui/material/Button";
 import Modal from "@mui/material/Modal";
 import AddIcon from "@mui/icons-material/Add";
 import { useAppDispatch } from "@/app/redux/hooks";
-import { addTask } from "@/app/redux/list_slice";
+import { addList } from "@/app/redux/list_slice";
 import EditIcon from "@mui/icons-material/Edit";
 import CheckIcon from "@mui/icons-material/Check";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -131,11 +131,10 @@ const shake = keyframes`
 100% { transform: translateX(0); }
 `;
 
-function EditableList() {
+function EditableList({ onClose }: { onClose: () => void }) {
     const [toDoList, setToDoList] = useState<ToDoList>({
-        // id: new Date().toISOString(),
         id: (Math.floor(Math.random() * 90000) + 10000).toString(),
-        title: "Welcome to ToDoist 📝",
+        title: "",
         tasks: [
             {
                 timeStamp: new Date().toISOString(),
@@ -146,58 +145,23 @@ function EditableList() {
         ],
     });
 
-    const handleToggle = (timeStamp: string) =>
-        setToDoList((prev) => ({
-            ...prev,
-            tasks: prev.tasks.map((item) =>
-                item.timeStamp === timeStamp ? { ...item, checked: !item.checked } : item
-            ),
-        }));
+    const dispatch = useAppDispatch();
 
-    const handleTextChange = (timeStamp: string, newText: string) =>
-        setToDoList((prev) => ({
-            ...prev,
-            tasks: prev.tasks.map((item) =>
-                item.timeStamp === timeStamp ? { ...item, text: newText } : item
-            ),
-        }));
-
-    const handleEditStart = (timeStamp: string) =>
-        setToDoList((prev) => ({
-            ...prev,
-            tasks: prev.tasks.map((item) =>
-                item.timeStamp === timeStamp ? { ...item, isEditing: true } : item
-            ),
-        }));
-
-    const handleEditEnd = (timeStamp: string) =>
-        setToDoList((prev) => ({
-            ...prev,
-            tasks: prev.tasks.map((item) =>
-                item.timeStamp === timeStamp ? { ...item, isEditing: false } : item
-            ),
-        }));
-
-    const handleAddItem = () => {
-        setToDoList((prev) => ({
-            ...prev,
-            tasks: [
-                ...prev.tasks,
-                {
-                    timeStamp: new Date().toISOString(),
-                    text: "",
-                    checked: false,
-                    isEditing: true,
-                },
-            ],
-        }));
+    const handleAddList = () => {
+        if (toDoList.title.trim() === "") {
+            alert("Please provide a title for the list before adding it!");
+            return;
+        }
+        dispatch(
+            addList({
+                listId: parseInt(toDoList.id),
+                title: toDoList.title,
+                tasks: toDoList.tasks,
+            })
+        );
+        setToDoList((prev) => ({ ...prev, title: "", tasks: [] }));
+        onClose();
     };
-
-    const handleDeleteItem = (timeStamp: string) =>
-        setToDoList((prev) => ({
-            ...prev,
-            tasks: prev.tasks.filter((item) => item.timeStamp !== timeStamp),
-        }));
 
     return (
         <Paper
@@ -221,29 +185,95 @@ function EditableList() {
                     mb: 3,
                 }}
             >
-                <TextField fullWidth label="Type List Title here📝" id="fullWidth" />
+                <TextField
+                    fullWidth
+                    label="Type List Title here📝"
+                    id="fullWidth"
+                    value={toDoList.title}
+                    onChange={(e) =>
+                        setToDoList((prev) => ({ ...prev, title: e.target.value }))
+                    }
+                />
             </Box>
             <List sx={{ width: "100%", bgcolor: "background.paper" }}>
                 {toDoList.tasks.map((item) => (
                     <EditableListItem
                         key={item.timeStamp}
                         task={item}
-                        handleToggle={handleToggle}
-                        handleTextChange={handleTextChange}
-                        handleEditStart={handleEditStart}
-                        handleEditEnd={handleEditEnd}
-                        handleDeleteItem={handleDeleteItem}
+                        handleToggle={(timeStamp) =>
+                            setToDoList((prev) => ({
+                                ...prev,
+                                tasks: prev.tasks.map((task) =>
+                                    task.timeStamp === timeStamp
+                                        ? { ...task, checked: !task.checked }
+                                        : task
+                                ),
+                            }))
+                        }
+                        handleTextChange={(timeStamp, newText) =>
+                            setToDoList((prev) => ({
+                                ...prev,
+                                tasks: prev.tasks.map((task) =>
+                                    task.timeStamp === timeStamp
+                                        ? { ...task, text: newText }
+                                        : task
+                                ),
+                            }))
+                        }
+                        handleEditStart={(timeStamp) =>
+                            setToDoList((prev) => ({
+                                ...prev,
+                                tasks: prev.tasks.map((task) =>
+                                    task.timeStamp === timeStamp
+                                        ? { ...task, isEditing: true }
+                                        : task
+                                ),
+                            }))
+                        }
+                        handleEditEnd={(timeStamp) =>
+                            setToDoList((prev) => ({
+                                ...prev,
+                                tasks: prev.tasks.map((task) =>
+                                    task.timeStamp === timeStamp
+                                        ? { ...task, isEditing: false }
+                                        : task
+                                ),
+                            }))
+                        }
+                        handleDeleteItem={(timeStamp) =>
+                            setToDoList((prev) => ({
+                                ...prev,
+                                tasks: prev.tasks.filter(
+                                    (task) => task.timeStamp !== timeStamp
+                                ),
+                            }))
+                        }
                     />
                 ))}
             </List>
             <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
-                <IconButton aria-label="add" onClick={handleAddItem}>
+                <IconButton
+                    aria-label="add"
+                    onClick={() =>
+                        setToDoList((prev) => ({
+                            ...prev,
+                            tasks: [
+                                ...prev.tasks,
+                                {
+                                    timeStamp: new Date().toISOString(),
+                                    text: "",
+                                    checked: false,
+                                    isEditing: true,
+                                },
+                            ],
+                        }))
+                    }
+                >
                     <AddIcon />
                 </IconButton>
             </Box>
             <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
                 <Button
-                    onClick={() => handleAddItem()}
                     sx={{
                         color: "white",
                         backgroundColor: "black",
@@ -251,6 +281,7 @@ function EditableList() {
                             animation: `${shake} 0.5s ease-in-out`,
                         },
                     }}
+                    onClick={handleAddList}
                 >
                     Add List
                 </Button>
@@ -278,14 +309,6 @@ export default function basicModal() {
 
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
-
-    //   const handleAddTask = () => {
-    //     if (taskTitle.trim()) {
-    //       dispatch(addTask(taskTitle));
-    //       setTaskTitle("");
-    //       handleClose();
-    //     }
-    //   };
 
     return (
         <Box
@@ -318,7 +341,7 @@ export default function basicModal() {
             </Button>
             <Modal open={open} onClose={handleClose}>
                 <Box sx={modalStyle}>
-                    <EditableList />
+                    <EditableList onClose={handleClose} />
                 </Box>
             </Modal>
         </Box>

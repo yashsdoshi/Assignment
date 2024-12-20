@@ -25,11 +25,11 @@ const taskSlice = createSlice({
     name: 'task',
     initialState,
     reducers: {
-        addList(state, action: PayloadAction<{title: string, listId: number}>, ) {
+        addList(state, action: PayloadAction<{listId: number, title: string, tasks: Task[]}>, ) {
             const newList: ToDoList = {
               id: action.payload.listId,
               title: action.payload.title, 
-              tasks: [],
+              tasks: action.payload.tasks,
             };
             state.lists.push(newList);
           },       
