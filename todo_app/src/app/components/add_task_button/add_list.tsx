@@ -1,6 +1,6 @@
 "use client";
 import * as React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Button from "@mui/material/Button";
 import Modal from "@mui/material/Modal";
 import AddIcon from "@mui/icons-material/Add";
@@ -163,6 +163,26 @@ function EditableList({ onClose }: { onClose: () => void }) {
         onClose();
     };
 
+    const quotes: string[] = [
+        "One task at a time, one step closer to success!",
+        "Success is the sum of small efforts, repeated day in and day out.",
+        "Believe in yourself and all that you are.",
+        "Your limitation—it's only your imagination.",
+        "Dream it. Wish it. Do it.",
+        "The harder you work for something, the greater you'll feel when you achieve it.",
+        "Don’t stop when you’re tired. Stop when you’re done.",
+        "It always seems impossible until it's done.",
+        "The only way to do great work is to love what you do.",
+        "Push yourself, because no one else is going to do it for you."
+    ];
+
+    const [quote, setQuote] = useState<string>('');
+
+    useEffect(() => {
+      const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+      setQuote(randomQuote);
+    }, [])
+
     return (
         <Paper
             elevation={3}
@@ -175,7 +195,7 @@ function EditableList({ onClose }: { onClose: () => void }) {
             }}
         >
             <Typography variant="h5" align="center" gutterBottom mb={2} fontWeight={500}>
-                💪 One task at a time, one step closer to success!
+                {quote}
             </Typography>
             <Box
                 sx={{
@@ -304,8 +324,6 @@ const modalStyle = {
 
 export default function basicModal() {
     const [open, setOpen] = React.useState(false);
-    const [taskTitle, setTaskTitle] = React.useState("");
-    const dispatch = useAppDispatch();
 
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
