@@ -1,6 +1,6 @@
 "use client";
-import Header from "./components/header/page";
-import AddTask from "./components/add_task_button/page";
+import Header from "./components/header/header";
+import AddTask from "./components/add_task_button/add_list";
 import ToDoList from "./components/to_do_list/to_do_list";
 import { useAppSelector } from "./redux/hooks";
 //import Login from "./components/login/page";
