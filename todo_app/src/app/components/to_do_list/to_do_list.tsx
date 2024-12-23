@@ -31,6 +31,14 @@ interface Task {
   isEditing: boolean;
 }
 
+interface ToDoList {
+  toDoList: {
+    id: number;
+    title: string;
+    tasks: Task[];
+  };
+}
+
 const EditableListItem: React.FC<{
   task: Task;
   toDoListId: number;
@@ -224,15 +232,7 @@ const EditMenu: React.FC<{ toDoListId: number }> = ({ toDoListId }) => {
   );
 };
 
-interface ToDoListProps {
-  toDoList: {
-    id: number;
-    title: string;
-    tasks: Task[];
-  };
-}
-
-export default function ToDoList({ toDoList }: ToDoListProps) {
+export default function ToDoList({ toDoList }: ToDoList) {
   const dispatch = useDispatch();
 
   const handleAddItem = () => {

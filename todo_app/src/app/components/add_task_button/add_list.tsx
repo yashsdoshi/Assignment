@@ -132,6 +132,10 @@ const shake = keyframes`
 `;
 
 function EditableList({ onClose }: { onClose: () => void }) {
+
+    const dispatch = useAppDispatch();
+    const [quote, setQuote] = useState<string>('');
+
     const [toDoList, setToDoList] = useState<ToDoList>({
         id: (Math.floor(Math.random() * 90000) + 10000).toString(),
         title: "",
@@ -145,42 +149,40 @@ function EditableList({ onClose }: { onClose: () => void }) {
         ],
     });
 
-    const dispatch = useAppDispatch();
+    const quotes: string[] = [
+        "One task at a time, one step closer to success!",
+        "Success is the sum of small efforts, repeated day in-day out.",
+        "Believe in yourself and all that you are.",
+        "Your limitation—it's only your imagination.",
+        "Dream it. Wish it. Do it.",
+        "The harder you work for something, the greater you'll feel when you achieve it.",
+        "Don't stop when you're tired. Stop when you're done.",
+        "It always seems impossible until it's done.",
+        "The only way to do great work is to love what you do.",
+        "Push yourself, because no one else is going to do it for you."
+    ];
 
     const handleAddList = () => {
         if (toDoList.title.trim() === "") {
             alert("Please provide a title for the list before adding it!");
             return;
         }
-        dispatch(
-            addList({
-                listId: parseInt(toDoList.id),
-                title: toDoList.title,
-                tasks: toDoList.tasks,
-            })
-        );
-        setToDoList((prev) => ({ ...prev, title: "", tasks: [] }));
+        else {
+            dispatch(
+                addList({
+                    listId: parseInt(toDoList.id),
+                    title: toDoList.title,
+                    tasks: toDoList.tasks,
+                })
+            );
+            setToDoList((prev) => ({ ...prev, title: "", tasks: [] }));
+        }
         onClose();
     };
 
-    const quotes: string[] = [
-        "One task at a time, one step closer to success!",
-        "Success is the sum of small efforts, repeated day in and day out.",
-        "Believe in yourself and all that you are.",
-        "Your limitation—it's only your imagination.",
-        "Dream it. Wish it. Do it.",
-        "The harder you work for something, the greater you'll feel when you achieve it.",
-        "Don’t stop when you’re tired. Stop when you’re done.",
-        "It always seems impossible until it's done.",
-        "The only way to do great work is to love what you do.",
-        "Push yourself, because no one else is going to do it for you."
-    ];
-
-    const [quote, setQuote] = useState<string>('');
-
     useEffect(() => {
-      const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
-      setQuote(randomQuote);
+        const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+        setQuote(randomQuote);
     }, [])
 
     return (
