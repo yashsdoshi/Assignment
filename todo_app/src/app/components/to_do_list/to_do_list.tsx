@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "@/app/redux/store";
+import { useDispatch } from "react-redux";
 import { addTask, completeTask, editTask, removeTask, removeList, renameList } from "@/app/redux/list_slice";
 import EditIcon from "@mui/icons-material/Edit";
 import CheckIcon from "@mui/icons-material/Check";

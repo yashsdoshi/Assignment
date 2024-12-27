@@ -1,6 +1,6 @@
 "use client";
 import * as React from "react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Button from "@mui/material/Button";
 import Modal from "@mui/material/Modal";
 import AddIcon from "@mui/icons-material/Add";
@@ -131,10 +131,96 @@ const shake = keyframes`
 100% { transform: translateX(0); }
 `;
 
-function EditableList({ onClose }: { onClose: () => void }) {
+interface ConfettiProps {
+    onStartExplosion: boolean;
+}
 
+const Confetti: React.FC<ConfettiProps> = ({ onStartExplosion }) => {
+    const canvasRef = useRef<HTMLCanvasElement | null>(null);
+    const [isExploding, setIsExploding] = useState(false);
+
+    useEffect(() => {
+        if (canvasRef.current) {
+            const canvas = canvasRef.current;
+            const ctx = canvas.getContext('2d');
+            if (ctx) {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+
+                const confettiPieces: {
+                    x: number;
+                    y: number;
+                    size: number;
+                    color: string;
+                    speedX: number;
+                    speedY: number;
+                    gravity: number;
+                    life: number;
+                }[] = [];
+
+                const explodeConfetti = (centerX: number, centerY: number) => {
+                    for (let i = 0; i < 200; i++) {
+                        const angle = Math.random() * 2 * Math.PI;
+                        const speed = Math.random() * 5 + 3; 
+                        confettiPieces.push({
+                            x: centerX,
+                            y: centerY,
+                            size: Math.random() * 5 + 5,
+                            color: `hsl(${Math.random() * 360}, 100%, 50%)`,
+                            speedX: Math.cos(angle) * speed,
+                            speedY: Math.sin(angle) * speed,
+                            gravity: 0.1,
+                            life: Math.random() * 60 + 60,
+                        });
+                    }
+                };
+
+                if (onStartExplosion && !isExploding) {
+                    setIsExploding(true);
+                    explodeConfetti(canvas.width / 2, canvas.height / 2);
+                }
+
+                const updateConfetti = () => {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                    confettiPieces.forEach((confetti, index) => {
+
+                        confetti.x += confetti.speedX;
+                        confetti.y += confetti.speedY;
+
+                        confetti.speedY += confetti.gravity;
+
+                        confetti.life--;
+
+                        if (confetti.life <= 0) {
+                            confettiPieces.splice(index, 1);
+                        }
+
+                        ctx.beginPath();
+                        ctx.arc(confetti.x, confetti.y, confetti.size, 0, Math.PI * 2);
+                        ctx.fillStyle = confetti.color;
+                        ctx.fill();
+                    });
+
+                    if (confettiPieces.length > 0) {
+                        requestAnimationFrame(updateConfetti);
+                    }
+                };
+
+                if (isExploding) {
+                    updateConfetti();
+                }
+            }
+        }
+    }, [onStartExplosion, isExploding]);
+
+    return <canvas ref={canvasRef} style={{ position: 'absolute', top: 0, left: 0, pointerEvents: 'none' }} />;
+};
+
+function EditableList({ onClose }: { onClose: () => void }) {
     const dispatch = useAppDispatch();
     const [quote, setQuote] = useState<string>('');
+    const [showConfetti, setShowConfetti] = useState<boolean>(false);
 
     const [toDoList, setToDoList] = useState<ToDoList>({
         id: (Math.floor(Math.random() * 90000) + 10000).toString(),
@@ -159,7 +245,7 @@ function EditableList({ onClose }: { onClose: () => void }) {
         "Don't stop when you're tired. Stop when you're done.",
         "It always seems impossible until it's done.",
         "The only way to do great work is to love what you do.",
-        "Push yourself, because no one else is going to do it for you."
+        "Push yourself, because no one else is going to do it for you.",
     ];
 
     const handleAddList = () => {
@@ -167,150 +253,165 @@ function EditableList({ onClose }: { onClose: () => void }) {
             alert("Please provide a title for the list before adding it!");
             return;
         }
-        else {
-            dispatch(
-                addList({
-                    listId: parseInt(toDoList.id),
-                    title: toDoList.title,
-                    tasks: toDoList.tasks,
-                })
-            );
-            setToDoList((prev) => ({ ...prev, title: "", tasks: [] }));
-        }
+
+        dispatch(
+            addList({
+                listId: parseInt(toDoList.id),
+                title: toDoList.title,
+                tasks: toDoList.tasks,
+            })
+        );
+        setToDoList((prev) => ({ ...prev, title: "", tasks: [] }));
+        setShowConfetti(true);
+        
+        setTimeout(() => {
+            setShowConfetti(false);
+        }, 3000);
+
         onClose();
     };
 
     useEffect(() => {
         const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
         setQuote(randomQuote);
-    }, [])
+    }, []);
 
     return (
-        <Paper
-            elevation={3}
-            sx={{
-                maxWidth: 800,
-                minWidth: 700,
-                margin: "24px auto",
-                padding: 3,
-                borderRadius: 2,
-            }}
-        >
-            <Typography variant="h5" align="center" gutterBottom mb={2} fontWeight={500}>
-                {quote}
-            </Typography>
-            <Box
+        <>
+            {showConfetti && <Confetti onStartExplosion={showConfetti} />}
+            <Paper
+                elevation={3}
                 sx={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    mb: 3,
+                    maxWidth: 800,
+                    minWidth: 700,
+                    margin: "24px auto",
+                    padding: 3,
+                    borderRadius: 2,
                 }}
             >
-                <TextField
-                    fullWidth
-                    label="Type List Title here📝"
-                    id="fullWidth"
-                    value={toDoList.title}
-                    onChange={(e) =>
-                        setToDoList((prev) => ({ ...prev, title: e.target.value }))
-                    }
-                />
-            </Box>
-            <List sx={{ width: "100%", bgcolor: "background.paper" }}>
-                {toDoList.tasks.map((item) => (
-                    <EditableListItem
-                        key={item.timeStamp}
-                        task={item}
-                        handleToggle={(timeStamp) =>
-                            setToDoList((prev) => ({
-                                ...prev,
-                                tasks: prev.tasks.map((task) =>
-                                    task.timeStamp === timeStamp
-                                        ? { ...task, checked: !task.checked }
-                                        : task
-                                ),
-                            }))
-                        }
-                        handleTextChange={(timeStamp, newText) =>
-                            setToDoList((prev) => ({
-                                ...prev,
-                                tasks: prev.tasks.map((task) =>
-                                    task.timeStamp === timeStamp
-                                        ? { ...task, text: newText }
-                                        : task
-                                ),
-                            }))
-                        }
-                        handleEditStart={(timeStamp) =>
-                            setToDoList((prev) => ({
-                                ...prev,
-                                tasks: prev.tasks.map((task) =>
-                                    task.timeStamp === timeStamp
-                                        ? { ...task, isEditing: true }
-                                        : task
-                                ),
-                            }))
-                        }
-                        handleEditEnd={(timeStamp) =>
-                            setToDoList((prev) => ({
-                                ...prev,
-                                tasks: prev.tasks.map((task) =>
-                                    task.timeStamp === timeStamp
-                                        ? { ...task, isEditing: false }
-                                        : task
-                                ),
-                            }))
-                        }
-                        handleDeleteItem={(timeStamp) =>
-                            setToDoList((prev) => ({
-                                ...prev,
-                                tasks: prev.tasks.filter(
-                                    (task) => task.timeStamp !== timeStamp
-                                ),
-                            }))
+                <Typography
+                    variant="h5"
+                    align="center"
+                    gutterBottom
+                    mb={2}
+                    fontWeight={500}
+                >
+                    {quote}
+                </Typography>
+                <Box
+                    sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        mb: 3,
+                    }}
+                >
+                    <TextField
+                        fullWidth
+                        label="Type List Title here📝"
+                        id="fullWidth"
+                        value={toDoList.title}
+                        onChange={(e) =>
+                            setToDoList((prev) => ({ ...prev, title: e.target.value }))
                         }
                     />
-                ))}
-            </List>
-            <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
-                <IconButton
-                    aria-label="add"
-                    onClick={() =>
-                        setToDoList((prev) => ({
-                            ...prev,
-                            tasks: [
-                                ...prev.tasks,
-                                {
-                                    timeStamp: new Date().toISOString(),
-                                    text: "",
-                                    checked: false,
-                                    isEditing: true,
-                                },
-                            ],
-                        }))
-                    }
-                >
-                    <AddIcon />
-                </IconButton>
-            </Box>
-            <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
-                <Button
-                    sx={{
-                        color: "white",
-                        backgroundColor: "black",
-                        "&:hover": {
-                            animation: `${shake} 0.5s ease-in-out`,
-                        },
-                    }}
-                    onClick={handleAddList}
-                >
-                    Add List
-                </Button>
-            </Box>
-        </Paper>
+                </Box>
+                <List sx={{ width: "100%", bgcolor: "background.paper" }}>
+                    {toDoList.tasks.map((item) => (
+                        <EditableListItem
+                            key={item.timeStamp}
+                            task={item}
+                            handleToggle={(timeStamp) =>
+                                setToDoList((prev) => ({
+                                    ...prev,
+                                    tasks: prev.tasks.map((task) =>
+                                        task.timeStamp === timeStamp
+                                            ? { ...task, checked: !task.checked }
+                                            : task
+                                    ),
+                                }))
+                            }
+                            handleTextChange={(timeStamp, newText) =>
+                                setToDoList((prev) => ({
+                                    ...prev,
+                                    tasks: prev.tasks.map((task) =>
+                                        task.timeStamp === timeStamp
+                                            ? { ...task, text: newText }
+                                            : task
+                                    ),
+                                }))
+                            }
+                            handleEditStart={(timeStamp) =>
+                                setToDoList((prev) => ({
+                                    ...prev,
+                                    tasks: prev.tasks.map((task) =>
+                                        task.timeStamp === timeStamp
+                                            ? { ...task, isEditing: true }
+                                            : task
+                                    ),
+                                }))
+                            }
+                            handleEditEnd={(timeStamp) =>
+                                setToDoList((prev) => ({
+                                    ...prev,
+                                    tasks: prev.tasks.map((task) =>
+                                        task.timeStamp === timeStamp
+                                            ? { ...task, isEditing: false }
+                                            : task
+                                    ),
+                                }))
+                            }
+                            handleDeleteItem={(timeStamp) =>
+                                setToDoList((prev) => ({
+                                    ...prev,
+                                    tasks: prev.tasks.filter(
+                                        (task) => task.timeStamp !== timeStamp
+                                    ),
+                                }))
+                            }
+                        />
+                    ))}
+                </List>
+                <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
+                    <IconButton
+                        aria-label="add"
+                        onClick={() =>
+                            setToDoList((prev) => ({
+                                ...prev,
+                                tasks: [
+                                    ...prev.tasks,
+                                    {
+                                        timeStamp: new Date().toISOString(),
+                                        text: "",
+                                        checked: false,
+                                        isEditing: true,
+                                    },
+                                ],
+                            }))
+                        }
+                    >
+                        <AddIcon />
+                    </IconButton>
+                </Box>
+                <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
+                    <Button
+                        sx={{
+                            color: "white",
+                            backgroundColor: "black",
+                            "&:hover": {
+                                animation: `${shake} 0.5s ease-in-out`,
+                            },
+                        }}
+                        onClick={handleAddList}
+                    >
+                        Add List
+                    </Button>
+                </Box>
+            </Paper>
+        </>
     );
 }
+
 
 const modalStyle = {
     position: "absolute",
